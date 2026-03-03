@@ -2,6 +2,10 @@
 name = "ultidocs-cli"
 version = "0.3.0"
 authors.workspace = true
+include = [
+    "src/**",
+    "Cargo.toml"
+]
 # homepage.workspace = true
 repository.workspace = true
 categories.workspace = true

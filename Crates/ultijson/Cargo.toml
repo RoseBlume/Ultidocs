@@ -3,6 +3,10 @@ name = "ultijson"
 version = "0.3.0"
 authors.workspace = true
 exclude = ["CHANGELOG.md", "/target"]
+include = [
+    "src/**",
+    "Cargo.toml"
+]
 # homepage.workspace = true
 repository.workspace = true
 categories.workspace = true

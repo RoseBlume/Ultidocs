@@ -1,7 +1,10 @@
 [package]
 name = "ultilinter"
 version = "0.3.0"
-exclude = ["CHANGELOG.md", "/target"]
+include = [
+    "src/**",
+    "Cargo.toml"
+]
 authors.workspace = true
 # homepage.workspace = true
 repository.workspace = true
