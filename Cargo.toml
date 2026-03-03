@@ -1,5 +1,5 @@
 [workspace]
-resolver = "2"
+resolve = "3"
 members = [
 	"crates/ultihighlighter",
 	"crates/ultimd2html", 

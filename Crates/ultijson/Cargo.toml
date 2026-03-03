@@ -1,10 +1,13 @@
 [package]
 name = "ultijson"
-version.workspace = true
+version = "0.3.0"
 authors.workspace = true
+exclude = ["CHANGELOG.md", "/target"]
 # homepage.workspace = true
 repository.workspace = true
 categories.workspace = true
 license.workspace = true
 edition.workspace = true
 
+[lib]
+path = "src/lib.rs"
