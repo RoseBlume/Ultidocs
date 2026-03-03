@@ -4,6 +4,7 @@ version = "0.3.0"
 exclude = ["CHANGELOG.md", "/target"]
 include = [
     "src/**",
+    "assets/**",
     "Cargo.toml"
 ]
 authors.workspace = true
