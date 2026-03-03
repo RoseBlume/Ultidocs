@@ -1,4 +1,4 @@
-use highlighter::highlight;
+use ultihighlighter::highlight;
 
 pub fn render_markdown(input: &str, title: &str, site_name: &str) -> String {
     let mut html = String::new();

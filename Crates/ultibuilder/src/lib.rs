@@ -13,7 +13,7 @@ use sidebar::{expand_sidebar, generate_sidebar_html, process_directory};
 pub use config::Config;
 use config::SidebarItem;
 use helpers::{parse_front_matter, wrap_html, try_fs, try_read_string, try_write};
-use md2html::render_markdown;
+use ultimd2html::render_markdown;
 use ultiminify::{minify_css, minify_js, format_css, format_js};
 
 #[derive(Debug)]

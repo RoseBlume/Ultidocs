@@ -1,7 +1,12 @@
 [package]
 name = "ultimd2html"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+authors.workspace = true
+# homepage.workspace = true
+repository.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [dependencies]
-ultihighlighter = { path = "../ultihighlighter" }
+ultihighlighter = { version = "0.3.0", path = "../ultihighlighter" }

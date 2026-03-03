@@ -1,4 +1,4 @@
-use md2html::render_markdown;
+use ultimd2html::render_markdown;
 use crate::helpers::{parse_front_matter, wrap_html};
 use crate::config::SidebarItem;
 use std::path::{Path};

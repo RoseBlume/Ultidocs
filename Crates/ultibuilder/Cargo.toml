@@ -1,9 +1,14 @@
 [package]
 name = "ultibuilder"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+authors.workspace = true
+# homepage.workspace = true
+repository.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [dependencies]
-md2html = { path = "../ultimd2html" }
-ultiminify = { path = "../ultiminify" }
-ultijson = { path = "../ultijson" }
+ultimd2html = { version = "0.3.0", path = "../ultimd2html" }
+ultiminify = { version = "0.3.0", path = "../ultiminify" }
+ultijson = { version = "0.3.0", path = "../ultijson" }
