@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-md2html = { path = "../md2html" }
+md2html = { path = "../ultimd2html" }
 ultiminify = { path = "../ultiminify" }
 ultijson = { path = "../ultijson" }

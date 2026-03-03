@@ -1,9 +1,9 @@
 [workspace]
 resolver = "3"
 members = [
-	"crates/highlighter",
-	"crates/md2html", 
-	"crates/ultiserver", 
+	"crates/ultihighlighter",
+	"crates/ultimd2html", 
+	"crates/ultidocs-cli", 
 	"crates/ultibuilder",
 	"crates/ultiminify", 
 	"crates/ultijson", 
