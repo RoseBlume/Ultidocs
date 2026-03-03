@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\Crates",
+    "\\Crates\\highlighter",
+    "\\Crates\\highlighter\\src",
+    "\\Crates\\md2html",
+    "\\Crates\\md2html\\src",
+    "\\Crates\\ultiminify",
+    "\\example",
+    "\\example\\content",
+    "\\example\\dist",
+    "\\example\\PolyDocs"
+  ],
+  "SelectedNode": "\\Crates\\ultiserver\\src\\main.rs",
+  "PreviewInSolutionExplorer": false
+}

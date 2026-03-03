@@ -1,0 +1,11 @@
+[workspace]
+resolver = "3"
+members = [
+	"crates/highlighter",
+	"crates/md2html", 
+	"crates/ultiserver", 
+	"crates/ultibuilder",
+	"crates/ultiminify", 
+	"crates/ultijson", 
+	"crates/ultilinter",
+]

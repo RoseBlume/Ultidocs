@@ -1,0 +1,239 @@
+/* Sidebar toggle button stays on top */
+#sidebar-toggle {
+    position: fixed; /* stays on top */
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10001; /* above sidebar */
+}
+
+/* =========================
+   Sidebar
+========================= */
+.sidebar {
+    width: 260px;
+    padding: 1rem;
+    overflow-y: auto;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transition: transform 0.25s ease;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+body.sidebar-open .sidebar {
+    transform: translateX(0);
+}
+
+/* Sidebar content */
+#rootbar {
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+    position: relative;
+    list-style: none;
+}
+
+#rootbar ul, .sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+}
+
+.sidebar li {
+    margin: 0.25rem 0;
+}
+
+/* Sidebar links full-width clickable */
+.sidebar a {
+    display: block;
+    padding: 0.5rem 0.75rem; /* full row background */
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+
+.sidebar a.current {
+    font-weight: 600;
+}
+
+
+
+/* Summary / Details */
+.sidebar summary {
+    list-style: none;
+}
+
+.sidebar summary::-webkit-details-marker {
+    display: none;
+}
+
+.sidebar details > summary::before {
+    content: "▸";
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+    transition: transform 0.15s ease;
+}
+
+.sidebar details > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 1.4;
+    transition: background-color 0.15s ease;
+    width: 100%; /* ensures background spans full sidebar width */
+    box-sizing: border-box;
+}
+
+
+
+.sidebar details[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+@media (prefers-color-scheme: light) {
+    .sidebar {
+        background: #f5f5f5;
+        color: #333333;
+    }
+    .sidebar a {
+        color: #333333;
+    }
+
+    #sidebar-toggle {
+        background-color: #444;
+        color: #fff;
+    }
+    .sidebar a:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar a.current {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: #000000;
+    }
+
+    .sidebar a.current:hover {
+        background-color: rgba(255, 255, 255, 0.20);
+    }
+
+    .sidebar details > summary {
+        color: #333333;
+    }
+
+    .sidebar details > summary:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    .sidebar details > summary::before {
+        color: #666666;
+    }
+}
+
+
+@media (prefers-color-scheme: dark) {
+    .sidebar {
+        background: #333333;
+        color: #f5f5f5;
+    }
+
+    .sidebar a {
+        color: #f5f5f5;
+    }
+
+    #sidebar-toggle {
+        background-color: #ddd;
+        color: #000;
+    }
+
+    .sidebar a:hover {
+        background-color: rgba(255, 255, 255, 0.08); /* subtle row highlight */
+    }
+
+    .sidebar a.current {
+        background-color: rgba(0, 0, 0, 0.35); /* current page */
+        color: #ffffff;
+    }
+
+    .sidebar a.current:hover {
+        background-color: rgba(0, 0, 0, 0.45);
+    }
+
+    .sidebar details > summary {
+        color: #f5f5f5;
+    }
+
+    .sidebar details > summary:hover {
+        background-color: rgba(255,255,255,0.08);
+    }
+
+    .sidebar details > summary::before {
+        color: #bbbbbb;
+    }
+}
+
+@media (min-width: 1024px) {
+    .sidebar {
+        width: 240px;
+        transform: none;
+        z-index: 1002;
+    }
+
+    #sidebar-toggle {
+        display: none;
+    }
+}
+
+/* Small screens */
+@media (max-width: 1023px) {
+    .sidebar {
+        width: 100vw;
+        left: -150vw;
+        height: 100vh;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+    }
+
+    #sidebar-toggle {
+        display: block;
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+    }
+
+    body.sidebar-open .sidebar {
+        left: 0;
+    }
+}
+
+
+/* Layer-based indentation aligned with arrow spacing */
+.sidebar li > ul {
+    padding-left: 0;
+}
+
+.sidebar li > ul > li > a,
+.sidebar li > ul > li > details > summary {
+    padding-left: 1.75rem;
+}
+
+.sidebar li > ul > li > ul > li > a,
+.sidebar li > ul > li > ul > li > details > summary {
+    padding-left: 2.75rem;
+}
+
+.sidebar li > ul > li > ul > li > ul > li > a,
+.sidebar li > ul > li > ul > li > ul > li > details > summary {
+    padding-left: 3.75rem;
+}

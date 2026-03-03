@@ -1,0 +1,12 @@
+[package]
+name = "ultidocs-cli"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "ulti"
+path = "src/main.rs"
+
+[dependencies]
+ultibuilder = { path = "../ultibuilder" }
+ultilinter = { path = "../ultilinter", default-features = false, features = ["html", "css", "javascript"] }

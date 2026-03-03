@@ -1,0 +1,9 @@
+[package]
+name = "ultibuilder"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+md2html = { path = "../md2html" }
+ultiminify = { path = "../ultiminify" }
+ultijson = { path = "../ultijson" }

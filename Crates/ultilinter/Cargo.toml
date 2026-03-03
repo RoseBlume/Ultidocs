@@ -1,0 +1,27 @@
+[package]
+name = "ultilinter"
+version = "0.1.0"
+edition = "2024"
+
+
+[dependencies]
+
+[features]
+default = ["c", "cpp", "csharp", "css", "dart", "html", "java", "javascript", "md", "nasm", "php", "python", "r", "rust", "sql", "typescript"]
+
+c = []
+cpp = []
+csharp = []
+css = []
+dart = []
+html = []
+java = []
+javascript = []
+md = []
+nasm = []
+php = []
+python = []
+r = []
+rust = []
+sql = []
+typescript = []

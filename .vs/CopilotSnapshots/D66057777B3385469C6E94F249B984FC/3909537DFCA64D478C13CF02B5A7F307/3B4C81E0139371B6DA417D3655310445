@@ -1,0 +1,151 @@
+﻿pub fn minify_js(code: &str) -> String {
+    let mut out = String::with_capacity(code.len());
+    let mut chars = code.chars().peekable();
+
+    let mut in_single = false;
+    let mut in_double = false;
+    let mut in_template = false;
+    let mut prev_was_ws = false;
+
+    while let Some(c) = chars.next() {
+        // Handle entering/exiting string/template literals
+        if in_single {
+            out.push(c);
+            if c == '\\' {
+                if let Some(n) = chars.next() {
+                    out.push(n);
+                }
+                continue;
+            }
+            if c == '\'' {
+                in_single = false;
+            }
+            continue;
+        }
+
+        if in_double {
+            out.push(c);
+            if c == '\\' {
+                if let Some(n) = chars.next() {
+                    out.push(n);
+                }
+                continue;
+            }
+            if c == '"' {
+                in_double = false;
+            }
+            continue;
+        }
+
+        if in_template {
+            out.push(c);
+            if c == '\\' {
+                if let Some(n) = chars.next() {
+                    out.push(n);
+                }
+                continue;
+            }
+            if c == '`' {
+                in_template = false;
+            }
+            continue;
+        }
+
+        // Not inside any string/template: detect comments
+        if c == '/' {
+            if let Some(&next) = chars.peek() {
+                if next == '/' {
+                    // line comment: skip until newline
+                    // consume the next '/'
+                    chars.next();
+                    while let Some(nc) = chars.next() {
+                        if nc == '\n' {
+                            // preserve a single space/newline boundary
+                            out.push(' ');
+                            prev_was_ws = true;
+                            break;
+                        }
+                    }
+                    continue;
+                } else if next == '*' {
+                    // block comment: skip until */
+                    chars.next();
+                    let mut prev = '\0';
+                    while let Some(nc) = chars.next() {
+                        if prev == '*' && nc == '/' {
+                            break;
+                        }
+                        prev = nc;
+                    }
+                    // replace block comment with a single space to separate tokens
+                    out.push(' ');
+                    prev_was_ws = true;
+                    continue;
+                }
+            }
+            // not a comment, treat as normal char
+            out.push(c);
+            prev_was_ws = false;
+            continue;
+        }
+
+        // Enter string/template
+        if c == '\'' {
+            in_single = true;
+            out.push(c);
+            prev_was_ws = false;
+            continue;
+        }
+        if c == '"' {
+            in_double = true;
+            out.push(c);
+            prev_was_ws = false;
+            continue;
+        }
+        if c == '`' {
+            in_template = true;
+            out.push(c);
+            prev_was_ws = false;
+            continue;
+        }
+
+        // Collapse whitespace outside strings/templates
+        if c.is_whitespace() {
+            if !prev_was_ws {
+                out.push(' ');
+                prev_was_ws = true;
+            }
+            continue;
+        }
+
+        // Normal character
+        out.push(c);
+        prev_was_ws = false;
+    }
+
+    // Trim leading/trailing whitespace introduced
+    let s = out.trim();
+    s.to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::minify_js;
+
+    #[test]
+    fn removes_line_and_block_comments_and_collapses_ws() {
+        let src = r#"
+        // line comment
+        var x = 1; /* block comment */
+        var s = "string // not comment";
+        var t = `template /* not comment */ ${1 + 2}`;
+        "#;
+
+        let out = minify_js(src);
+        assert!(out.contains("var x = 1;"));
+        assert!(out.contains("var s = \"string // not comment\";"));
+        assert!(out.contains("var t = `template /* not comment */ ${1 + 2}`;"));
+        assert!(!out.contains("line comment"));
+        assert!(!out.contains("block comment"));
+    }
+}
