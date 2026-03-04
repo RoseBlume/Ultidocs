@@ -9,34 +9,36 @@ pub fn wrap_html(
     title: &str,
     desc_block: &str,
     body: &str,
+    site_root: &str
 ) -> String {
     format!(
 r#"<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>{}</title>
-{}
-<link rel="stylesheet" href="styles/main.css">
-<link rel="stylesheet" href="styles/sidebar.css">
-<link rel="stylesheet" href="styles/highlight.css">
+<title>{title}</title>
+{desc}
+<link rel="stylesheet" href="{root}/styles/main.css">
+<link rel="stylesheet" href="{root}/styles/sidebar.css">
+<link rel="stylesheet" href="{root}/styles/highlight.css">
 </head>
 <body>
 
 <div class="layout">
     <div id="sidebar-container"></div>
     <main class="main">
-        {}
+        {body}
     </main>
 </div>
 
-<script src="reload.js"></script>
+<script src="{root}/reload.js"></script>
 
 </body>
 </html>"#,
-        title,
-        desc_block,
-        body
+        title = title,
+        desc = desc_block,
+        body = body,
+        root = site_root
     )
 }
 

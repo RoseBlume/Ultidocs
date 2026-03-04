@@ -9,6 +9,7 @@ pub fn process_directory(
     input_dir: &Path,
     output_dir: &Path,
     site_name: &str,
+    site_root: &str
 ) -> Result<(), Box<dyn std::error::Error>> {
 
     for entry in fs::read_dir(input_dir)? {
@@ -20,7 +21,7 @@ pub fn process_directory(
             let normalized_dir = normalize_path_segment(&path.file_name().unwrap().to_string_lossy());
             let new_output = output_dir.join(&normalized_dir);
             fs::create_dir_all(&new_output)?;
-            process_directory(&path, &new_output, site_name)?;
+            process_directory(&path, &new_output, site_name, site_root)?;
         } else if path.extension().and_then(|e| e.to_str()) == Some("md") {
             let raw = fs::read_to_string(&path)?;
             let (meta, markdown) = parse_front_matter(&raw, &path)?;
@@ -30,7 +31,7 @@ pub fn process_directory(
                 .map(|d| format!(r#"<meta name="description" content="{}">"#, d))
                 .unwrap_or_default();
 
-            let html = wrap_html(&format!("{} | {}", site_name, &meta.title), &desc_block, &body);
+            let html = wrap_html(&format!("{} | {}", site_name, &meta.title), &desc_block, &body, site_root);
 
             // Normalize file names
             let normalized_name = normalize_path_segment(&path.file_stem().unwrap().to_string_lossy());

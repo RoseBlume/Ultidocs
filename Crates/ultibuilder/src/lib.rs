@@ -70,11 +70,18 @@ impl Builder {
     }
 
     fn build_all_markdown(&mut self) -> Result<(), Box<dyn Error>> {
+        if !self.production {
+            self.config.site_root = String::from("/");
+        }
         process_directory(
             Path::new(&self.config.content_dir),
             Path::new(&self.config.build_dir),
             &self.config.title,
+            &self.config.site_root
+            
         )
+        
+
     }
 
     pub fn rebuild_markdown(&mut self, md_path: &Path) -> Result<(), Box<dyn Error>> {
@@ -85,7 +92,10 @@ impl Builder {
             .as_ref()
             .map(|d| format!(r#"<meta name="description" content="{}">"#, d))
             .unwrap_or_default();
-        let html = wrap_html(&meta.title, &desc_block, &body);
+        if !self.production {
+            self.config.site_root = String::from("");
+        }
+        let html = wrap_html(&meta.title, &desc_block, &body, &self.config.site_root);
 
         let relative = md_path.strip_prefix(&self.config.content_dir)?;
         let mut output_path = PathBuf::from(&self.config.build_dir);
