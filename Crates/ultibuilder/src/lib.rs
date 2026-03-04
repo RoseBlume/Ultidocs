@@ -178,7 +178,7 @@ impl Builder {
             if let Some(parent) = dest.parent() {
                 fs::create_dir_all(parent)?;
             }
-            fs::File::create(path);
+            let _ = fs::File::create(path);
             fs::copy(path, &dest)
                 .map_err(|e| format!("Failed to copy '{}' to '{:?}': {}", path, dest, e))?;
         } else {
