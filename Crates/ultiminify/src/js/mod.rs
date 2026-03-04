@@ -6,10 +6,11 @@ pub fn minify_js(code: &str) -> String {
     let mut string_delim = '\0';
     let mut in_single_comment = false;
     let mut in_multi_comment = false;
-    let mut prev_was_space = false;
+
+    let mut prev_char: Option<char> = None;
 
     while let Some(c) = chars.next() {
-        // Handle single-line comments
+        // --- Single-line comments ---
         if in_single_comment {
             if c == '\n' {
                 in_single_comment = false;
@@ -17,7 +18,7 @@ pub fn minify_js(code: &str) -> String {
             continue;
         }
 
-        // Handle multi-line comments
+        // --- Multi-line comments ---
         if in_multi_comment {
             if c == '*' && chars.peek() == Some(&'/') {
                 chars.next();
@@ -26,12 +27,11 @@ pub fn minify_js(code: &str) -> String {
             continue;
         }
 
-        // Handle strings
+        // --- Strings / template literals ---
         if in_string {
             result.push(c);
 
             if c == '\\' {
-                // Preserve escaped characters
                 if let Some(next) = chars.next() {
                     result.push(next);
                 }
@@ -42,18 +42,19 @@ pub fn minify_js(code: &str) -> String {
                 in_string = false;
             }
 
+            prev_char = Some(c);
             continue;
         }
 
-        // Detect start of string
         if c == '"' || c == '\'' || c == '`' {
             in_string = true;
             string_delim = c;
             result.push(c);
+            prev_char = Some(c);
             continue;
         }
 
-        // Detect comments
+        // --- Comment detection ---
         if c == '/' {
             match chars.peek() {
                 Some('/') => {
@@ -70,16 +71,23 @@ pub fn minify_js(code: &str) -> String {
             }
         }
 
-        // Collapse whitespace
+        // --- Whitespace handling ---
         if c.is_whitespace() {
-            if !prev_was_space {
-                result.push(' ');
-                prev_was_space = true;
+            let next = chars.peek().copied();
+
+            // Only keep space if merging identifiers/numbers
+            if let (Some(prev), Some(next)) = (prev_char, next) {
+                if (prev.is_alphanumeric() || prev == '_')
+                    && (next.is_alphanumeric() || next == '_')
+                {
+                    result.push(' ');
+                    prev_char = Some(' ');
+                }
             }
             continue;
         }
 
-        // Remove space before certain punctuation
+        // --- Remove space before punctuation ---
         if "{}[]();,:+-*/%=<>!&|^~?".contains(c) {
             if result.ends_with(' ') {
                 result.pop();
@@ -87,7 +95,7 @@ pub fn minify_js(code: &str) -> String {
         }
 
         result.push(c);
-        prev_was_space = false;
+        prev_char = Some(c);
     }
 
     result.trim().to_string()
