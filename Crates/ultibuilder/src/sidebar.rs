@@ -133,12 +133,12 @@ pub fn expand_sidebar(
 // }
 
 /// Generate sidebar HTML
-pub fn generate_sidebar_html(items: &Vec<SidebarItem>) -> String {
-    let tree = generate_sidebar_html_inner(items, true);
+pub fn generate_sidebar_html(items: &Vec<SidebarItem>, site_root: &str) -> String {
+    let tree = generate_sidebar_html_inner(items, true, &site_root);
     format!(r#"<aside class="sidebar">{}</aside>"#, tree)
 }
 
-fn generate_sidebar_html_inner(items: &Vec<SidebarItem>, is_root: bool) -> String {
+fn generate_sidebar_html_inner(items: &Vec<SidebarItem>, is_root: bool, site_root: &str) -> String {
     let mut html = if is_root { String::from(r#"<ul id="rootbar">"#) } else { String::from("<ul>") };
 
     for item in items {
@@ -152,10 +152,10 @@ fn generate_sidebar_html_inner(items: &Vec<SidebarItem>, is_root: bool) -> Strin
         if has_children {
             let open_attr = if item.collapsed.unwrap_or(false) { "" } else { " open" };
             html.push_str(&format!(r#"<details{}><summary>{}</summary>"#, open_attr, item.label));
-            html.push_str(&generate_sidebar_html_inner(item.items.as_ref().unwrap(), false));
+            html.push_str(&generate_sidebar_html_inner(item.items.as_ref().unwrap(), false, site_root));
             html.push_str("</details>");
         } else if let Some(slug) = &item.slug {
-            html.push_str(&format!(r#"<a href="{}.html">{}</a>"#, slug, item.label));
+            html.push_str(&format!(r#"<a href="{}{}.html">{}</a>"#, site_root, slug, item.label));
         }
 
         html.push_str("</li>");

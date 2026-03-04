@@ -149,8 +149,10 @@ impl Builder {
 
         // Validate paths with normalized underscores
         validate_sidebar_normalized(&self.config.sidebar, &self.config.content_dir)?;
-
-        let html = generate_sidebar_html(&self.config.sidebar);
+        if !self.production {
+            self.config.site_root = String::from("/");
+        }
+        let html = generate_sidebar_html(&self.config.sidebar, &self.config.site_root);
         try_write(&Path::new(&self.config.build_dir).join("sidebar.html"), &html)?;
         Ok(())
     }
