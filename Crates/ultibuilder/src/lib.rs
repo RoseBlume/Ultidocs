@@ -172,7 +172,7 @@ impl Builder {
 
         // Favicon
         if let Some(path) = &self.config.favicon {
-            let dest = std::path::Path::new(&self.config.build_dir)
+            let dest = Path::new(&self.config.build_dir)
                 .join("favicon.ico");
 
             if let Some(parent) = dest.parent() {
