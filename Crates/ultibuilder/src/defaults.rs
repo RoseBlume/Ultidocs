@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 use std::fs;
+use crate::try_write;
 
 const CSS: &str = include_str!(
     concat!(
@@ -22,12 +23,6 @@ const HIGHLIGHT_CSS: &str = include_str!(
     )
 );
 
-const JS: &str = include_str!(
-    concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/assets/scripts/reload.js"
-    )
-);
 
 const FAVICON: &[u8; 4286] = include_bytes!(
     concat!(
@@ -61,9 +56,83 @@ pub fn write_highlight_css(css_path: &PathBuf) -> Result<(), Box<dyn std
 }
 
 // dist/reload.js
-pub fn write_dev_script(build_dir: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let js_path = Path::new(build_dir).join("reload.js");
-    fs::write(js_path, JS)?;
+pub fn write_dev_script(
+    build_dir: &str,
+    site_root: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+
+    // Normalize root
+    let mut root = site_root.trim().to_string();
+
+    if !root.is_empty() {
+        if !root.starts_with('/') {
+            root.insert(0, '/');
+        }
+        if !root.ends_with('/') {
+            root.push('/');
+        }
+    }
+
+    let sidebar_path = if root.is_empty() {
+        "sidebar.html".to_string()
+    } else {
+        format!("{root}sidebar.html")
+    };
+
+    let script = format!(r#"document.addEventListener('DOMContentLoaded', async () => {{
+    const container = document.querySelector('#sidebar-container');
+    if (container) {{
+        const res = await fetch('{sidebar}');
+        const html = await res.text();
+        container.innerHTML = html;
+    }}
+
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('#sidebar-toggle');
+    if (!sidebar) return;
+
+    function expandParents(element) {{
+        let parent = element.closest('details');
+        while (parent) {{
+            parent.open = true;
+            parent = parent.parentElement.closest('details');
+        }}
+    }}
+
+    function scrollToCurrentLink() {{
+        const currentPath = window.location.pathname;
+        const allLinks = sidebar.querySelectorAll('a[href]');
+        for (const link of allLinks) {{
+            const linkPath = new URL(link.href).pathname;
+            if (linkPath === currentPath) {{
+                link.classList.add('current');
+                expandParents(link);
+                link.scrollIntoView({{
+                    behavior: 'smooth',
+                    block: 'center'
+                }});
+                break;
+            }}
+        }}
+    }}
+
+    if (toggleBtn) {{
+        toggleBtn.addEventListener('click', () => {{
+            document.body.classList.toggle('sidebar-open');
+            if (document.body.classList.contains('sidebar-open')) {{
+                scrollToCurrentLink();
+            }}
+        }});
+    }}
+
+    scrollToCurrentLink();
+}});"#, sidebar = sidebar_path);
+
+    try_write(
+        &std::path::Path::new(build_dir).join("reload.js"),
+        &script,
+    )?;
+
     Ok(())
 }
 

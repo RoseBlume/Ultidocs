@@ -200,7 +200,7 @@ impl Builder {
             }
         }
 
-        if self.config.custom_js.is_none() { defaults::write_dev_script(&self.config.build_dir)?; }
+        if self.config.custom_js.is_none() { defaults::write_dev_script(&self.config.build_dir, &self.config.site_root)?; }
         if self.config.custom_css.is_none() { defaults::write_css(&styles)?; }
         if self.config.sidebar_css.is_none() { defaults::write_sidebar_css(&styles)?; }
         if self.config.sidebar_css.is_none() { defaults::write_highlight_css(&styles)?; }
