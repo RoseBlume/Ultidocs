@@ -1,6 +1,7 @@
 [package]
 name = "ultijson"
 version = "0.3.0"
+description = "A simple json parser for ultidocs manifests"
 authors.workspace = true
 exclude = ["CHANGELOG.md", "/target"]
 include = [

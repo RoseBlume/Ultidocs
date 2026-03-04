@@ -1,6 +1,7 @@
 [package]
 name = "ultilinter"
 version = "0.3.0"
+description = "A simple linter library"
 include = [
     "src/**",
     "Cargo.toml"

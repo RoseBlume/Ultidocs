@@ -6,6 +6,7 @@ include = [
     "src/**",
     "Cargo.toml"
 ]
+description = "A cli application to develop documentation sites"
 # homepage.workspace = true
 repository.workspace = true
 categories.workspace = true
