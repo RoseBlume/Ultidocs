@@ -33,33 +33,57 @@ impl Rule for MissingColonSpace {
         if !config.is_enabled(self.id()) { return; }
 
         let starts = line_starts(source);
+        let mut brace_depth: i32 = 0;
 
-        for (idx, _) in source.match_indices(':') {
-            if source.get(idx + 1..idx + 2) != Some(" ") {
+        for (line_index, line) in source.lines().enumerate() {
+            let trimmed = line.trim();
 
-                let line_number = match starts.binary_search(&idx) {
-                    Ok(line) => line,
-                    Err(next) => next - 1,
-                };
+            // Track braces first
+            brace_depth += trimmed.matches('{').count() as i32;
+            brace_depth -= trimmed.matches('}').count() as i32;
 
-                let column = idx - starts[line_number];
+            // Only check inside blocks
+            if brace_depth <= 0 {
+                continue;
+            }
 
-                report.push(LintError {
-                    file: file.map(|p| p.to_path_buf()),
-                    line: line_number + 1,
-                    column: column + 1,
-                    severity: self.severity(),
-                    rule_id: self.id(),
-                    message: "Missing space after ':'".into(),
-                    suggestion: Some("Add space after ':'".into()),
-                    fix: Some(Fix {
+            // Skip non-declaration lines
+            if trimmed.starts_with('@')
+                || trimmed.contains('{')
+                || trimmed.contains('}')
+                || trimmed.starts_with("/*")
+                || !trimmed.contains(':')
+            {
+                continue;
+            }
+
+            // Now check colon spacing
+            for (idx, _) in line.match_indices(':') {
+                // Ignore pseudo-elements
+                if line.get(idx + 1..idx + 2) == Some(":") {
+                    continue;
+                }
+
+                if line.get(idx + 1..idx + 2) != Some(" ") {
+                    let global_offset = starts[line_index] + idx;
+
+                    report.push(LintError {
+                        file: file.map(|p| p.to_path_buf()),
+                        line: line_index + 1,
+                        column: idx + 1,
+                        severity: self.severity(),
                         rule_id: self.id(),
-                        edits: vec![TextEdit {
-                            range: idx + 1..idx + 1,
-                            replacement: " ".into(),
-                        }],
-                    }),
-                });
+                        message: "Missing space after ':'".into(),
+                        suggestion: Some("Add space after ':'".into()),
+                        fix: Some(Fix {
+                            rule_id: self.id(),
+                            edits: vec![TextEdit {
+                                range: global_offset + 1..global_offset + 1,
+                                replacement: " ".into(),
+                            }],
+                        }),
+                    });
+                }
             }
         }
     }

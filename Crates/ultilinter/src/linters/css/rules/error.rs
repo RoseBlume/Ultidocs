@@ -33,10 +33,22 @@ impl Rule for MissingSemicolon {
         for (i, line) in source.lines().enumerate() {
             let trimmed = line.trim();
 
-            if trimmed.contains(':')
-                && !trimmed.ends_with(';')
-                && !trimmed.ends_with('{')
-                && !trimmed.ends_with('}')
+            // Skip empty lines
+            if trimmed.is_empty() {
+                continue;
+            }
+
+            // Remove trailing comment (only if it exists)
+            let code_part = if let Some(idx) = trimmed.find("/*") {
+                trimmed[..idx].trim_end()
+            } else {
+                trimmed
+            };
+
+            if code_part.contains(':')
+                && !code_part.ends_with(';')
+                && !code_part.ends_with('{')
+                && !code_part.ends_with('}')
             {
                 report.push(LintError {
                     file: file.map(|p| p.to_path_buf()),

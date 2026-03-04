@@ -73,6 +73,10 @@ pub fn write_dev_script(
         }
     }
 
+    // if root == String::from("/") {
+    //     root = String::new();
+    // }
+
     let sidebar_path = if root.is_empty() {
         "sidebar.html".to_string()
     } else {

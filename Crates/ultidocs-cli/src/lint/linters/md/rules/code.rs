@@ -6,7 +6,7 @@ use ultilinter::{
 
 pub fn rules() -> Vec<Box<dyn Rule>> {
     vec![
-        Box::new(CodeBlockLint),
+        // Box::new(CodeBlockLint),
         Box::new(IndentedCodeBlock),
         Box::new(UnclosedCodeBlock),
         Box::new(CodeBlockNoTrailingSpace),
@@ -19,43 +19,43 @@ pub fn rules() -> Vec<Box<dyn Rule>> {
 // MD007 – Code block linting (language required)
 // ============================================================
 //
-#[derive(Clone)]
-pub struct CodeBlockLint;
+// #[derive(Clone)]
+// pub struct CodeBlockLint;
 
-impl Rule for CodeBlockLint {
-    fn id(&self) -> &'static str { "MD007" }
-    fn severity(&self) -> Severity { Severity::Warning }
+// impl Rule for CodeBlockLint {
+//     fn id(&self) -> &'static str { "MD007" }
+//     fn severity(&self) -> Severity { Severity::Warning }
 
-    fn check(&self, file: Option<&Path>, source: &str,
-             report: &mut LintReport, config: &LintConfig) {
-        if !config.is_enabled(self.id()) { return; }
+//     fn check(&self, file: Option<&Path>, source: &str,
+//              report: &mut LintReport, config: &LintConfig) {
+//         if !config.is_enabled(self.id()) { return; }
 
-        let mut in_code_block = false;
+//         let mut in_code_block = false;
 
-        for (i, line) in source.lines().enumerate() {
-            if line.trim_start().starts_with("```") {
-                if in_code_block {
-                    in_code_block = false;
-                } else {
-                    let lang = line.trim_start().trim_start_matches("```");
-                    if lang.is_empty() {
-                        report.push(LintError {
-                            file: file.map(|p| p.to_path_buf()),
-                            line: i + 1,
-                            column: 1,
-                            severity: self.severity(),
-                            rule_id: self.id(),
-                            message: "Code block missing language specifier".into(),
-                            suggestion: Some("Add language after ```".into()),
-                            fix: None,
-                        });
-                    }
-                    in_code_block = true;
-                }
-            }
-        }
-    }
-}
+//         for (i, line) in source.lines().enumerate() {
+//             if line.trim_start().starts_with("```") {
+//                 if in_code_block {
+//                     in_code_block = false;
+//                 } else {
+//                     let lang = line.trim_start().trim_start_matches("```");
+//                     if lang.is_empty() {
+//                         report.push(LintError {
+//                             file: file.map(|p| p.to_path_buf()),
+//                             line: i + 1,
+//                             column: 1,
+//                             severity: self.severity(),
+//                             rule_id: self.id(),
+//                             message: "Code block missing language specifier".into(),
+//                             suggestion: Some("Add language after ```".into()),
+//                             fix: None,
+//                         });
+//                     }
+//                     in_code_block = true;
+//                 }
+//             }
+//         }
+//     }
+// }
 
 //
 // ============================================================

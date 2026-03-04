@@ -9,8 +9,14 @@ pub fn wrap_html(
     title: &str,
     desc_block: &str,
     body: &str,
-    site_root: &str
+    mut site_root: &str
 ) -> String {
+    // let root = site_root;
+    if site_root == "/" {
+        site_root = "";
+    }
+
+
     format!(
 r#"<!DOCTYPE html>
 <html>

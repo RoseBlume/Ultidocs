@@ -132,17 +132,30 @@ impl Rule for TableRowPipes {
     fn id(&self) -> &'static str { "MD025" }
     fn severity(&self) -> Severity { Severity::Warning }
 
-    fn check(&self,
-             file: Option<&Path>,
-             source: &str,
-             report: &mut LintReport,
-             config: &LintConfig) {
+    fn check(
+        &self,
+        file: Option<&Path>,
+        source: &str,
+        report: &mut LintReport,
+        config: &LintConfig
+    ) {
         if !config.is_enabled(self.id()) { return; }
+
+        let mut in_code_block = false;
 
         for (i, line) in source.lines().enumerate() {
             let trimmed = line.trim();
-            if trimmed.contains('|') {
-                if !trimmed.starts_with('|') || !trimmed.ends_with('|') {
+
+            if trimmed.starts_with("```") {
+                in_code_block = !in_code_block;
+                continue;
+            }
+            if in_code_block { continue; }
+
+            let cleaned = strip_protected_regions(trimmed);
+
+            if cleaned.contains('|') {
+                if !cleaned.starts_with('|') || !cleaned.ends_with('|') {
                     report.push(LintError {
                         file: file.map(|p| p.to_path_buf()),
                         line: i + 1,
@@ -171,15 +184,29 @@ impl Rule for TrailingPipe {
     fn id(&self) -> &'static str { "MD026" }
     fn severity(&self) -> Severity { Severity::Info }
 
-    fn check(&self,
-             file: Option<&Path>,
-             source: &str,
-             report: &mut LintReport,
-             config: &LintConfig) {
+    fn check(
+        &self,
+        file: Option<&Path>,
+        source: &str,
+        report: &mut LintReport,
+        config: &LintConfig
+    ) {
         if !config.is_enabled(self.id()) { return; }
 
+        let mut in_code_block = false;
+
         for (i, line) in source.lines().enumerate() {
-            if line.trim_end().ends_with("||") {
+            let trimmed = line.trim();
+
+            if trimmed.starts_with("```") {
+                in_code_block = !in_code_block;
+                continue;
+            }
+            if in_code_block { continue; }
+
+            let cleaned = strip_protected_regions(trimmed);
+
+            if cleaned.trim_end().ends_with("||") {
                 report.push(LintError {
                     file: file.map(|p| p.to_path_buf()),
                     line: i + 1,
@@ -207,22 +234,34 @@ impl Rule for MissingHeaderSeparator {
     fn id(&self) -> &'static str { "MD027" }
     fn severity(&self) -> Severity { Severity::Error }
 
-    fn check(&self,
-             file: Option<&Path>,
-             source: &str,
-             report: &mut LintReport,
-             config: &LintConfig) {
+    fn check(
+        &self,
+        file: Option<&Path>,
+        source: &str,
+        report: &mut LintReport,
+        config: &LintConfig
+    ) {
         if !config.is_enabled(self.id()) { return; }
 
-        let mut previous_line_is_header = false;
+        let mut in_code_block = false;
+        let mut previous_was_header = false;
 
         for (i, line) in source.lines().enumerate() {
-            if line.contains('|') {
-                if !previous_line_is_header {
-                    previous_line_is_header = true;
+            let trimmed = line.trim();
+
+            if trimmed.starts_with("```") {
+                in_code_block = !in_code_block;
+                continue;
+            }
+            if in_code_block { continue; }
+
+            let cleaned = strip_protected_regions(trimmed);
+
+            if cleaned.contains('|') {
+                if !previous_was_header {
+                    previous_was_header = true;
                 } else {
-                    let trimmed = line.trim();
-                    if !trimmed.chars().all(|c| c == '|' || c == '-' || c == ':' || c.is_whitespace()) {
+                    if !is_separator_row(&cleaned) {
                         report.push(LintError {
                             file: file.map(|p| p.to_path_buf()),
                             line: i + 1,
@@ -240,7 +279,6 @@ impl Rule for MissingHeaderSeparator {
         }
     }
 }
-
 //
 // ============================================================
 // MD028 – Header row contains empty cells
@@ -253,17 +291,36 @@ impl Rule for HeaderEmptyCell {
     fn id(&self) -> &'static str { "MD028" }
     fn severity(&self) -> Severity { Severity::Warning }
 
-    fn check(&self,
-             file: Option<&Path>,
-             source: &str,
-             report: &mut LintReport,
-             config: &LintConfig) {
+    fn check(
+        &self,
+        file: Option<&Path>,
+        source: &str,
+        report: &mut LintReport,
+        config: &LintConfig
+    ) {
         if !config.is_enabled(self.id()) { return; }
 
+        let mut in_code_block = false;
+
         for (i, line) in source.lines().enumerate() {
-            if line.contains('|') && line.chars().all(|c| c != '-') {
-                let cells: Vec<&str> = line.split('|').map(|s| s.trim()).filter(|s| !s.is_empty()).collect();
-                if cells.len() == 0 {
+            let trimmed = line.trim();
+
+            if trimmed.starts_with("```") {
+                in_code_block = !in_code_block;
+                continue;
+            }
+            if in_code_block { continue; }
+
+            let cleaned = strip_protected_regions(trimmed);
+
+            if cleaned.starts_with('|') && !is_separator_row(&cleaned) {
+                let cells: Vec<&str> = cleaned
+                    .split('|')
+                    .map(|s| s.trim())
+                    .filter(|s| !s.is_empty())
+                    .collect();
+
+                if cells.is_empty() {
                     report.push(LintError {
                         file: file.map(|p| p.to_path_buf()),
                         line: i + 1,
@@ -292,18 +349,37 @@ impl Rule for InconsistentColumns {
     fn id(&self) -> &'static str { "MD029" }
     fn severity(&self) -> Severity { Severity::Error }
 
-    fn check(&self,
-             file: Option<&Path>,
-             source: &str,
-             report: &mut LintReport,
-             config: &LintConfig) {
+    fn check(
+        &self,
+        file: Option<&Path>,
+        source: &str,
+        report: &mut LintReport,
+        config: &LintConfig,
+    ) {
         if !config.is_enabled(self.id()) { return; }
 
-        let mut expected_columns = None;
+        let mut in_code_block = false;
+        let mut expected_columns: Option<usize> = None;
 
         for (i, line) in source.lines().enumerate() {
-            if line.contains('|') {
-                let col_count = line.matches('|').count() - 1;
+            let trimmed = line.trim();
+
+            if trimmed.starts_with("```") {
+                in_code_block = !in_code_block;
+                continue;
+            }
+            if in_code_block { continue; }
+
+            let cleaned = strip_protected_regions(trimmed);
+
+            if cleaned.starts_with('|') && cleaned.ends_with('|') {
+                let cells: Vec<&str> = cleaned
+                    .split('|')
+                    .filter(|c| !c.trim().is_empty())
+                    .collect();
+
+                let col_count = cells.len();
+
                 match expected_columns {
                     Some(expected) => {
                         if col_count != expected {
@@ -313,15 +389,62 @@ impl Rule for InconsistentColumns {
                                 column: 1,
                                 severity: self.severity(),
                                 rule_id: self.id(),
-                                message: format!("Table row has {} columns; expected {}", col_count, expected),
-                                suggestion: Some("Ensure all rows have same number of columns".into()),
+                                message: format!(
+                                    "Table row has {} columns; expected {}",
+                                    col_count,
+                                    expected
+                                ),
+                                suggestion: Some(
+                                    "Ensure all rows have same number of columns".into()
+                                ),
                                 fix: None,
                             });
                         }
-                    },
+                    }
                     None => expected_columns = Some(col_count),
+                }
+            } else {
+                expected_columns = None;
+            }
+        }
+    }
+}
+
+fn strip_protected_regions(line: &str) -> String {
+    let mut result = String::with_capacity(line.len());
+
+    let mut chars = line.chars().peekable();
+    let mut in_backtick = false;
+    let mut in_single_quote = false;
+    let mut in_double_quote = false;
+
+    while let Some(c) = chars.next() {
+        match c {
+            '`' if !in_single_quote && !in_double_quote => {
+                in_backtick = !in_backtick;
+                result.push(' ');
+            }
+            '\'' if !in_backtick && !in_double_quote => {
+                in_single_quote = !in_single_quote;
+                result.push(' ');
+            }
+            '"' if !in_backtick && !in_single_quote => {
+                in_double_quote = !in_double_quote;
+                result.push(' ');
+            }
+            _ => {
+                if in_backtick || in_single_quote || in_double_quote {
+                    result.push(' ');
+                } else {
+                    result.push(c);
                 }
             }
         }
     }
+
+    result
+}
+
+fn is_separator_row(line: &str) -> bool {
+    line.chars().all(|c| c == '|' || c == '-' || c == ':' || c.is_whitespace())
 }
