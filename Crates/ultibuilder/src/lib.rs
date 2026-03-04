@@ -8,7 +8,7 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::error::Error;
-
+use std::fs::File;
 use sidebar::{expand_sidebar, generate_sidebar_html, process_directory};
 pub use config::Config;
 use config::SidebarItem;
@@ -33,24 +33,24 @@ impl Builder {
         let build_path = Path::new(&config.build_dir);
 
         if build_path.exists() {
-            fn unlock_dir(path: &Path) -> io::Result<()> {
-                for entry in fs::read_dir(path)? {
-                    let entry = entry?;
-                    let path = entry.path();
-                    if path.is_dir() {
-                        unlock_dir(&path)?;
-                    } else {
-                        #[cfg(windows)]
-                        {
-                            let mut perms = fs::metadata(&path)?.permissions();
-                            perms.set_readonly(false);
-                            fs::set_permissions(&path, perms)?;
-                        }
-                    }
-                }
-                Ok(())
-            }
-            unlock_dir(build_path)?;
+            // fn unlock_dir(path: &Path) -> io::Result<()> {
+            //     for entry in fs::read_dir(path)? {
+            //         let entry = entry?;
+            //         let path = entry.path();
+            //         if path.is_dir() {
+            //             unlock_dir(&path)?;
+            //         } else {
+            //             #[cfg(windows)]
+            //             {
+            //                 let mut perms = fs::metadata(&path)?.permissions();
+            //                 perms.set_readonly(false);
+            //                 fs::set_permissions(&path, perms)?;
+            //             }
+            //         }
+            //     }
+            //     Ok(())
+            // }
+            // unlock_dir(build_path)?;
             try_fs(build_path, |p| fs::remove_dir_all(p))?;
         }
 
@@ -176,11 +176,17 @@ impl Builder {
                 .join("favicon.ico");
 
             if let Some(parent) = dest.parent() {
-                fs::create_dir_all(parent)?;
+                std::fs::create_dir_all(parent)?;
             }
-            let _ = fs::File::create(&dest);
-            fs::copy(path, &dest)
-                .map_err(|e| format!("Failed to copy '{}' to '{:?}': {}", path, dest, e))?;
+
+            let mut src_file = File::open(path)
+                .map_err(|e| format!("Failed to open '{}': {}", path, e))?;
+
+            let mut dest_file = File::create(&dest)
+                .map_err(|e| format!("Failed to create '{:?}': {}", dest, e))?;
+
+            io::copy(&mut src_file, &mut dest_file)
+                .map_err(|e| format!("Failed to copy favicon: {}", e))?;
         } else {
             defaults::write_favicon(&self.config.build_dir)?;
         }
