@@ -176,10 +176,10 @@ impl Builder {
                 .join("favicon.ico");
 
             if let Some(parent) = dest.parent() {
-                std::fs::create_dir_all(parent)?;
+                fs::create_dir_all(parent)?;
             }
-
-            std::fs::copy(path, &dest)
+            fs::File::create(path);
+            fs::copy(path, &dest)
                 .map_err(|e| format!("Failed to copy '{}' to '{:?}': {}", path, dest, e))?;
         } else {
             defaults::write_favicon(&self.config.build_dir)?;
