@@ -19,6 +19,7 @@ r#"<!DOCTYPE html>
 <title>{title}</title>
 {desc}
 <link rel="stylesheet" href="{root}/styles/main.css">
+<link rel="icon" type="image/x-icon" href="{root}/favicon.ico">
 <link rel="stylesheet" href="{root}/styles/sidebar.css">
 <link rel="stylesheet" href="{root}/styles/highlight.css">
 </head>
