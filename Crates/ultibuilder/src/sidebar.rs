@@ -140,6 +140,17 @@ pub fn generate_sidebar_html(items: &Vec<SidebarItem>, site_root: &str) -> Strin
 }
 
 fn generate_sidebar_html_inner(items: &Vec<SidebarItem>, is_root: bool, site_root: &str) -> String {
+    let mut root = site_root.trim().to_string();
+
+    if !root.is_empty() {
+        if !root.starts_with('/') {
+            root.insert(0, '/');
+        }
+        if !root.ends_with('/') {
+            root.push('/');
+        }
+    }
+    
     let mut html = if is_root { String::from(r#"<ul id="rootbar">"#) } else { String::from("<ul>") };
 
     for item in items {
@@ -156,7 +167,7 @@ fn generate_sidebar_html_inner(items: &Vec<SidebarItem>, is_root: bool, site_roo
             html.push_str(&generate_sidebar_html_inner(item.items.as_ref().unwrap(), false, site_root));
             html.push_str("</details>");
         } else if let Some(slug) = &item.slug {
-            html.push_str(&format!(r#"<a href="{}/{}.html">{}</a>"#, site_root, slug, item.label));
+            html.push_str(&format!(r#"<a href="{}{}.html">{}</a>"#, root, slug, item.label));
         }
 
         html.push_str("</li>");
