@@ -4,9 +4,26 @@ pub fn minify_css(code: &str) -> String {
 
     let mut in_string = false;
     let mut string_delim = '\0';
+    let mut in_comment = false;
 
     while let Some(c) = chars.next() {
 
+        // --- Handle comments ---
+        if in_comment {
+            if c == '*' && chars.peek() == Some(&'/') {
+                chars.next();
+                in_comment = false;
+            }
+            continue;
+        }
+
+        if !in_string && c == '/' && chars.peek() == Some(&'*') {
+            chars.next();
+            in_comment = true;
+            continue;
+        }
+
+        // --- Handle strings ---
         if in_string {
             result.push(c);
 
@@ -32,31 +49,22 @@ pub fn minify_css(code: &str) -> String {
         }
 
         match c {
-            '{' => {
-                result.push('{');
-            }
 
-            '}' => {
-                if result.ends_with(';') {
-                    result.pop(); // remove trailing semicolon
+            // Remove whitespace before these
+            '{' | '}' | ':' | ';' | ',' => {
+                while result.ends_with(' ') {
+                    result.pop();
                 }
-                result.push('}');
+
+                if c == '}' && result.ends_with(';') {
+                    result.pop();
+                }
+
+                result.push(c);
             }
 
-            ';' => {
-                result.push(';');
-            }
-
-            ':' => {
-                result.push(':');
-            }
-
-            ',' => {
-                result.push(',');
-            }
-
+            // Collapse whitespace
             c if c.is_whitespace() => {
-                // collapse selector whitespace only when needed
                 if !result.ends_with(['{', '}', ':', ';', ',', ' ']) {
                     result.push(' ');
                 }
