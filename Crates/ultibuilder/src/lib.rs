@@ -172,8 +172,13 @@ impl Builder {
 
         // Favicon
         if let Some(path) = &self.config.favicon {
-            let data = fs::read(path).map_err(|e| format!("Failed to read '{}': {}", path, e))?;
-            try_write(&Path::new(&self.config.build_dir).join("favicon.ico"), &String::from_utf8_lossy(&data))?;
+            let data = fs::read(path)
+                .map_err(|e| format!("Failed to read '{}': {}", path, e))?;
+
+            fs::write(
+                Path::new(&self.config.build_dir).join("favicon.ico"),
+                data,
+            )?;
         } else {
             defaults::write_favicon(&self.config.build_dir)?;
         }

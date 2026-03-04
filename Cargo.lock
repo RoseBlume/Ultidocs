@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "ultibuilder"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "ultijson",
  "ultimd2html",
@@ -13,7 +13,7 @@ dependencies = [
 
 [[package]]
 name = "ultidocs-cli"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "ultibuilder",
  "ultilinter",
@@ -21,23 +21,23 @@ dependencies = [
 
 [[package]]
 name = "ultihighlighter"
-version = "0.3.2"
+version = "0.3.3"
 
 [[package]]
 name = "ultijson"
-version = "0.3.2"
+version = "0.3.3"
 
 [[package]]
 name = "ultilinter"
-version = "0.3.2"
+version = "0.3.3"
 
 [[package]]
 name = "ultimd2html"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "ultihighlighter",
 ]
 
 [[package]]
 name = "ultiminify"
-version = "0.3.2"
+version = "0.3.3"
