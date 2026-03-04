@@ -17,9 +17,9 @@ r#"<!DOCTYPE html>
 <meta charset="UTF-8">
 <title>{}</title>
 {}
-<link rel="stylesheet" href="/styles/main.css">
-<link rel="stylesheet" href="/styles/sidebar.css">
-<link rel="stylesheet" href="/styles/highlight.css">
+<link rel="stylesheet" href="styles/main.css">
+<link rel="stylesheet" href="styles/sidebar.css">
+<link rel="stylesheet" href="styles/highlight.css">
 </head>
 <body>
 
@@ -30,7 +30,7 @@ r#"<!DOCTYPE html>
     </main>
 </div>
 
-<script src="/reload.js"></script>
+<script src="reload.js"></script>
 
 </body>
 </html>"#,
