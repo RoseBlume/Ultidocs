@@ -172,13 +172,15 @@ impl Builder {
 
         // Favicon
         if let Some(path) = &self.config.favicon {
-            let data = fs::read(path)
-                .map_err(|e| format!("Failed to read '{}': {}", path, e))?;
+            let dest = std::path::Path::new(&self.config.build_dir)
+                .join("favicon.ico");
 
-            fs::write(
-                Path::new(&self.config.build_dir).join("favicon.ico"),
-                data,
-            )?;
+            if let Some(parent) = dest.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+
+            std::fs::copy(path, &dest)
+                .map_err(|e| format!("Failed to copy '{}' to '{:?}': {}", path, dest, e))?;
         } else {
             defaults::write_favicon(&self.config.build_dir)?;
         }
