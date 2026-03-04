@@ -1,13 +1,13 @@
 [workspace]
 resolve = "3"
 members = [
-	"crates/ultihighlighter",
-	"crates/ultimd2html", 
-	"crates/ultidocs-cli", 
-	"crates/ultibuilder",
-	"crates/ultiminify", 
-	"crates/ultijson", 
-	"crates/ultilinter",
+	"Crates/ultihighlighter",
+	"Crates/ultimd2html", 
+	"Crates/ultidocs-cli", 
+	"Crates/ultibuilder",
+	"Crates/ultiminify", 
+	"Crates/ultijson", 
+	"Crates/ultilinter",
 ]
 
 
