@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 1️⃣ Load sidebar first
     if (container) {
-        const res = await fetch('/sidebar.html');
+        const res = await fetch('sidebar.html');
         const html = await res.text();
         container.innerHTML = html;
     }

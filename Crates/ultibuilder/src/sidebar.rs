@@ -155,7 +155,7 @@ fn generate_sidebar_html_inner(items: &Vec<SidebarItem>, is_root: bool) -> Strin
             html.push_str(&generate_sidebar_html_inner(item.items.as_ref().unwrap(), false));
             html.push_str("</details>");
         } else if let Some(slug) = &item.slug {
-            html.push_str(&format!(r#"<a href="/{}.html">{}</a>"#, slug, item.label));
+            html.push_str(&format!(r#"<a href="{}.html">{}</a>"#, slug, item.label));
         }
 
         html.push_str("</li>");
