@@ -12,9 +12,7 @@
     z-index: 10001; /* above sidebar */
 }
 
-/* =========================
-   Sidebar
-========================= */
+/* Sidebar */
 .sidebar {
     width: 260px;
     padding: 1rem;

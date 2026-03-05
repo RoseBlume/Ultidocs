@@ -14,7 +14,6 @@ pub struct Config {
     pub custom_css: Option<String>,
     pub sidebar_css: Option<String>,
     pub highlight_css: Option<String>,
-    pub custom_js: Option<String>,
     pub sidebar: Vec<SidebarItem>,
 }
 
@@ -49,8 +48,7 @@ impl Config {
             favicon: Self::get_optional_string(&obj, "favicon"),
             custom_css: Self::get_optional_string(&obj, "custom_css"),
             sidebar_css: Self::get_optional_string(&obj, "sidebar_css"),
-            highlight_css: Self::get_optional_string(&obj, "highlight_css"),
-            custom_js: Self::get_optional_string(&obj, "custom_js"),           
+            highlight_css: Self::get_optional_string(&obj, "highlight_css"),           
             sidebar: SidebarItem::parse_sidebar(&obj)?,
         })
     }

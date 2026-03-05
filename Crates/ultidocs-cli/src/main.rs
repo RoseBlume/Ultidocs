@@ -18,7 +18,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         Subcommand::Dev => {
-            let host = "127.0.0.1";
+            // let host = "127.0.0.1";
+            let host = "localhost";
             let port = 8080;
             dev::run(Arc::new(cli.config.unwrap()), host, port)
         }

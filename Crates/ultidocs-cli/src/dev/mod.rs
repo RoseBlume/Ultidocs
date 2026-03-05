@@ -1,11 +1,11 @@
-use std::net::TcpListener;
+use std::net::{TcpListener, TcpStream};
 use std::io::{Read, Write};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::thread;
 use std::time::{SystemTime};
 use std::sync::{Arc, Mutex};
-type Clients = Arc<Mutex<Vec<std::net::TcpStream>>>;
+type Clients = Arc<Mutex<Vec<TcpStream>>>;
 use crate::helpers::collect_files;
 use crate::helpers::parse_path;
 use ultibuilder::{Builder, Config};
@@ -24,57 +24,107 @@ pub fn run(config: Arc<Config>, host: &str, port: u16) -> Result<(), Box<dyn std
     serve(clients, host, port)
 }
 
-
-            
-
-
-
-fn serve(clients: Clients, host: &str, port: u16) -> Result<(), Box<dyn std::error::Error>> {
+fn serve(clients: Arc<Mutex<Vec<TcpStream>>>, host: &str, port: u16) -> Result<(), Box<dyn std::error::Error>> {
     let link = format!("{}:{}", host, port);
     let listener = TcpListener::bind(&link)?;
-    // println!("Serving at http://127.0.0.1:8080");
+    println!("Serving at http://{}:{}", host, port);
 
     for stream in listener.incoming() {
-        let mut stream = stream?;
-        let mut buffer = [0; 2048];
-        stream.read(&mut buffer)?;
-        let request = String::from_utf8_lossy(&buffer);
-        let first_line = request.lines().next().unwrap_or("");
-        let path = parse_path(first_line);
+        match stream {
+            Ok(stream) => {
+                let clients = clients.clone();
+                thread::spawn(move || {
+                    if let Err(e) = handle_connection(stream, clients) {
+                        eprintln!("Error handling connection: {}", e);
+                    }
+                });
+            }
+            Err(e) => eprintln!("Connection failed: {}", e),
+        }
+    }
 
-        if path == "/reload" {
-            // SSE client
-            let stream_clone = stream.try_clone()?;
-            stream.write_all(
-                b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nCache-Control: no-cache\r\n\r\n"
-            )?;
-            clients.lock().unwrap().push(stream_clone);
-            continue;
+    Ok(())
+}
+
+
+fn handle_connection(mut stream: TcpStream, clients: Arc<Mutex<Vec<TcpStream>>>) -> Result<(), Box<dyn std::error::Error>> {
+    let mut buffer = [0; 2048];
+    stream.read(&mut buffer)?;
+    let request = String::from_utf8_lossy(&buffer);
+    let first_line = request.lines().next().unwrap_or("");
+    let path = parse_path(first_line); // your existing helper
+
+    // SSE endpoint for live reload
+    if path == "/reload" {
+        let stream_clone = stream.try_clone()?;
+        stream.write_all(
+            b"HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nCache-Control: no-cache\r\n\r\n"
+        )?;
+        clients.lock().unwrap().push(stream_clone);
+        return Ok(());
+    }
+
+    // Map URL path to file in dist/
+    let file_path = if path == "/" {
+        "dist/index.html".to_string()
+    } else {
+        format!("dist{}", path)
+    };
+
+    if Path::new(&file_path).exists() {
+        let mut contents_bytes = fs::read(&file_path)?;
+
+        // Inject live-reload JS into HTML files (skip sidebar.html)
+        if file_path.ends_with(".html") && !file_path.ends_with("sidebar.html") {
+            let mut contents = String::from_utf8(contents_bytes)?;
+            let snippet = r#"
+<script>
+  const evtSource = new EventSource('/reload');
+  evtSource.onmessage = () => { location.reload(); };
+</script>
+"#;
+            if let Some(pos) = contents.rfind("</body>") {
+                contents.insert_str(pos, snippet);
+            } else {
+                contents.push_str(snippet);
+            }
+            contents_bytes = contents.into_bytes();
         }
 
-        let file_path = if path == "/" {
-            "dist/index.html".to_string()
+        // Simple content type detection
+        let content_type = if file_path.ends_with(".html") {
+            "text/html"
+        } else if file_path.ends_with(".css") {
+            "text/css"
+        } else if file_path.ends_with(".js") {
+            "application/javascript"
+        } else if file_path.ends_with(".ico") {
+            "image/x-icon"
+        } else if file_path.ends_with(".png") {
+            "image/png"
+        } else if file_path.ends_with(".jpg") || file_path.ends_with(".jpeg") {
+            "image/jpeg"
+        } else if file_path.ends_with(".svg") {
+            "image/svg+xml"
         } else {
-            format!("dist{}", path)
+            "application/octet-stream"
         };
 
-        if Path::new(&file_path).exists() {
-            let contents = fs::read(&file_path)?;
-            let response = format!(
-                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n",
-                contents.len()
-            );
-            stream.write_all(response.as_bytes())?;
-            stream.write_all(&contents)?;
-        } else {
-            let body = "404 Not Found";
-            let response = format!(
-                "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {}\r\n\r\n{}",
-                body.len(),
-                body
-            );
-            stream.write_all(response.as_bytes())?;
-        }
+        let response = format!(
+            "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Length: {}\r\n\r\n",
+            content_type,
+            contents_bytes.len()
+        );
+        stream.write_all(response.as_bytes())?;
+        stream.write_all(&contents_bytes)?;
+    } else {
+        let body = "404 Not Found";
+        let response = format!(
+            "HTTP/1.1 404 NOT FOUND\r\nContent-Length: {}\r\n\r\n{}",
+            body.len(),
+            body
+        );
+        stream.write_all(response.as_bytes())?;
     }
 
     Ok(())
@@ -97,8 +147,7 @@ fn watch_and_rebuild(config: &Config, clients: Clients, host: &str, port: u16) {
             &config.favicon,
             &config.custom_css,
             &config.sidebar_css,
-            &config.highlight_css,
-            &config.custom_js,
+            &config.highlight_css
         ] {
             if let Some(file) = opt_file {
                 if let Ok(metadata) = std::fs::metadata(file) {
@@ -139,7 +188,6 @@ fn watch_and_rebuild(config: &Config, clients: Clients, host: &str, port: u16) {
             &config.custom_css,
             &config.sidebar_css,
             &config.highlight_css,
-            &config.custom_js,
         ] {
             if let Some(file) = opt_file {
                 if let Ok(metadata) = std::fs::metadata(file) {

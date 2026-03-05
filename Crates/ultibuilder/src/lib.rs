@@ -1,18 +1,27 @@
 mod config;
-mod defaults;
+mod assets;
 mod helpers;
 mod sidebar;
 
 use std::ffi::OsStr;
 use std::fs;
-use std::io;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::error::Error;
 use std::fs::File;
-use sidebar::{expand_sidebar, generate_sidebar_html, process_directory};
+use sidebar::{expand_sidebar, generate_sidebar_html};
 pub use config::Config;
+use assets::Assets;
 use config::SidebarItem;
-use helpers::{parse_front_matter, wrap_html, try_fs, try_read_string, try_write};
+use helpers::{
+    parse_front_matter, 
+    wrap_html, 
+    load_css, 
+    process_directory,
+    try_fs, 
+    try_read_string, 
+    try_write
+};
 use ultimd2html::render_markdown;
 use ultiminify::{minify_css, minify_js, format_css, format_js};
 
@@ -26,6 +35,7 @@ struct PageMeta {
 pub struct Builder {
     config: Config,
     production: bool,
+    assets: Assets
 }
 
 impl Builder {
@@ -57,10 +67,10 @@ impl Builder {
         try_fs(build_path, |p| fs::create_dir_all(p))?;
         try_fs(&build_path.join("styles"), |p| fs::create_dir_all(p))?;
 
-        let mut builder = Self { config: config.clone(), production };
+        let mut builder = Self { config: config.clone(), production, assets: Assets::new(production) };
         builder.write_assets()?;
-        builder.build_all_markdown()?;
         builder.regenerate_sidebar()?;
+        builder.build_all_markdown()?;
 
         if production {
             ultiminify::process_dir(build_path, true)?;
@@ -77,7 +87,8 @@ impl Builder {
             Path::new(&self.config.content_dir),
             Path::new(&self.config.build_dir),
             &self.config.title,
-            &self.config.site_root
+            &self.config.site_root,
+            &self.assets
             
         )
         
@@ -87,7 +98,10 @@ impl Builder {
     pub fn rebuild_markdown(&mut self, md_path: &Path) -> Result<(), Box<dyn Error>> {
         let raw = try_read_string(md_path)?;
         let (meta, markdown) = parse_front_matter(&raw, md_path)?;
-        let body = render_markdown(&markdown, &meta.title, &self.config.title);
+        if !self.production {
+            self.config.site_root = String::from("/");
+        }
+        let body = render_markdown(&markdown, &meta.title, &self.config.title, &self.config.site_root);
         let desc_block = meta.description
             .as_ref()
             .map(|d| format!(r#"<meta name="description" content="{}">"#, d))
@@ -95,7 +109,7 @@ impl Builder {
         if !self.production {
             self.config.site_root = String::from("");
         }
-        let html = wrap_html(&meta.title, &desc_block, &body, &self.config.site_root);
+        let html = wrap_html(&meta.title, &desc_block, &body, &self.config.site_root, &self.assets);
 
         let relative = md_path.strip_prefix(&self.config.content_dir)?;
         let mut output_path = PathBuf::from(&self.config.build_dir);
@@ -162,62 +176,47 @@ impl Builder {
         if !self.production {
             self.config.site_root = String::from("/");
         }
-        let html = generate_sidebar_html(&self.config.sidebar, &self.config.site_root);
-        try_write(&Path::new(&self.config.build_dir).join("sidebar.html"), &html)?;
+        self.assets.sidebar_html = generate_sidebar_html(&self.config.sidebar, &self.config.site_root);
         Ok(())
     }
 
     fn write_assets(&mut self) -> Result<(), Box<dyn Error>> {
-        let styles = Path::new(&self.config.build_dir).join("styles");
 
         // Favicon
+        let dest = Path::new(&self.config.build_dir).join("favicon.ico");
+
+        if let Some(parent) = dest.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let mut dest_file = File::create(&dest)
+            .map_err(|e| format!("Failed to create '{:?}': {}", dest, e))?;
+
         if let Some(path) = &self.config.favicon {
-            let dest = Path::new(&self.config.build_dir)
-                .join("favicon.ico");
-
-            if let Some(parent) = dest.parent() {
-                std::fs::create_dir_all(parent)?;
-            }
-
             let mut src_file = File::open(path)
                 .map_err(|e| format!("Failed to open '{}': {}", path, e))?;
 
-            let mut dest_file = File::create(&dest)
-                .map_err(|e| format!("Failed to create '{:?}': {}", dest, e))?;
 
             io::copy(&mut src_file, &mut dest_file)
                 .map_err(|e| format!("Failed to copy favicon: {}", e))?;
         } else {
-            defaults::write_favicon(&self.config.build_dir)?;
+            dest_file
+                .write_all(&self.assets.favicon)
+                .map_err(|e| format!("Failed to write favicon: {}", e))?;
         }
 
-        // CSS & JS assets
-        for (src, dest) in [
-            (&self.config.custom_css, styles.join("main.css")),
-            (&self.config.sidebar_css, styles.join("sidebar.css")),
-            (&self.config.highlight_css, styles.join("highlight.css")),
-            (&self.config.custom_js, Path::new(&self.config.build_dir).join("reload.js")),
-        ] {
-            if let Some(path) = src {
-                let content = try_read_string(Path::new(path))?;
-                let processed_content = if self.production {
-                    if dest.extension().map_or(false, |ext| ext == "css") { minify_css(&content) }
-                    else if dest.extension().map_or(false, |ext| ext == "js") { minify_js(&content) }
-                    else { content }
-                } else {
-                    if dest.extension().map_or(false, |ext| ext == "css") { format_css(&content) }
-                    else if dest.extension().map_or(false, |ext| ext == "js") { format_js(&content) }
-                    else { content }
-                };
-                try_write(&dest, &processed_content)?;
-            }
+        if let Some(css) = load_css(&self.config.custom_css)? {
+            self.assets.main_css = css;
         }
 
-        if self.config.custom_js.is_none() && self.production { defaults::write_dev_script(&self.config.build_dir, &self.config.site_root)?; }
-        if self.config.custom_js.is_none() && !self.production { defaults::write_dev_script(&self.config.build_dir, "/")?; }
-        if self.config.custom_css.is_none() { defaults::write_css(&styles)?; }
-        if self.config.sidebar_css.is_none() { defaults::write_sidebar_css(&styles)?; }
-        if self.config.sidebar_css.is_none() { defaults::write_highlight_css(&styles)?; }
+        if let Some(css) = load_css(&self.config.sidebar_css)? {
+            self.assets.sidebar_css = css;
+        }
+
+        if let Some(css) = load_css(&self.config.highlight_css)? {
+            self.assets.highlight_css = css;
+        }
+        
 
         Ok(())
     }
@@ -225,7 +224,6 @@ impl Builder {
     pub fn rebuild_custom(&mut self, target: &str) -> Result<(), Box<dyn Error>> {
         let opt_path = match target {
             "css" => self.config.custom_css.as_ref(),
-            "js" => self.config.custom_js.as_ref(),
             _ => None,
         };
 

@@ -1,0 +1,58 @@
+.link-card {
+    list-style: none;
+    padding: 1rem;
+}
+
+.card-link {
+    display: block;
+    height: 100%;
+    padding: 1.25rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* Light theme */
+@media (prefers-color-scheme: light) {
+    .card-link {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        color: #1a1a1a;
+    }
+
+    .card-link:hover {
+        background: #f7f7f7;
+        border-color: #bbb;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+    .card-link {
+        background: #1a1a1a;
+        border: 1px solid #222;
+        color: #ffffff;
+    }
+
+    .card-link:hover {
+        background: #2a2a2a;
+        border-color: #444;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        transform: translateY(-2px);
+    }
+}
+
+.card-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-desc {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    opacity: 0.75;
+}

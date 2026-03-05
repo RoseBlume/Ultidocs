@@ -1,50 +1,14 @@
-use ultimd2html::render_markdown;
-use crate::helpers::{parse_front_matter, wrap_html};
 use crate::config::SidebarItem;
+use crate::helpers::{
+    parse_front_matter,
+    normalize_path_segment
+};
 use std::path::{Path};
 use std::fs;
 
-/// Recursively process markdown files and generate normalized HTML
-pub fn process_directory(
-    input_dir: &Path,
-    output_dir: &Path,
-    site_name: &str,
-    site_root: &str
-) -> Result<(), Box<dyn std::error::Error>> {
 
-    for entry in fs::read_dir(input_dir)? {
-        let entry = entry?;
-        let path = entry.path();
 
-        if path.is_dir() {
-            // Normalize folder names
-            let normalized_dir = normalize_path_segment(&path.file_name().unwrap().to_string_lossy());
-            let new_output = output_dir.join(&normalized_dir);
-            fs::create_dir_all(&new_output)?;
-            process_directory(&path, &new_output, site_name, site_root)?;
-        } else if path.extension().and_then(|e| e.to_str()) == Some("md") {
-            let raw = fs::read_to_string(&path)?;
-            let (meta, markdown) = parse_front_matter(&raw, &path)?;
-            let body = render_markdown(&markdown, &meta.title, site_name);
-            let desc_block = meta.description
-                .as_ref()
-                .map(|d| format!(r#"<meta name="description" content="{}">"#, d))
-                .unwrap_or_default();
 
-            let html = wrap_html(&format!("{} | {}", site_name, &meta.title), &desc_block, &body, site_root);
-
-            // Normalize file names
-            let normalized_name = normalize_path_segment(&path.file_stem().unwrap().to_string_lossy());
-            let mut output_path = output_dir.join(&normalized_name);
-            output_path.set_extension("html");
-
-            fs::write(&output_path, html)?;
-            println!("Generated: {} => {}", &meta.title, output_path.display());
-        }
-    }
-
-    Ok(())
-}
 
 /// Expand sidebar and normalize slugs
 pub fn expand_sidebar(
@@ -177,7 +141,3 @@ fn generate_sidebar_html_inner(items: &Vec<SidebarItem>, is_root: bool, site_roo
     html
 }
 
-/// Normalize folder/file names to underscores
-fn normalize_path_segment(segment: &str) -> String {
-    segment.replace(' ', "_")
-}

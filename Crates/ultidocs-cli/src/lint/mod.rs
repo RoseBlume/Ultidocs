@@ -15,7 +15,6 @@ pub fn run(config: Config, do_fix: bool, verbose: u8, print_fixed: bool) -> Resu
 
     for opt_file in [
         &config.custom_css,
-        &config.custom_js,
         &config.highlight_css,
         &config.sidebar_css,
     ] {

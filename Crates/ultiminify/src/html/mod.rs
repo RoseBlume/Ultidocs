@@ -83,24 +83,30 @@ pub fn minify_html(code: &str) -> String {
 pub fn format_html(code: &str) -> String {
     let mut result = String::new();
     let mut chars = code.chars().peekable();
+
+    let indent_str = "    ";
     let mut indent_level = 0;
-    let indent = "    ";
+
     let mut in_tag = false;
     let mut in_string = false;
     let mut string_delim = '\0';
     let mut tag_buffer = String::new();
-    let mut skip_format = false; // skip formatting inside <pre> or <code>
+    let mut text_buffer = String::new();
+
+    let mut skip_format = false; // for <pre> / <code>
 
     while let Some(c) = chars.next() {
-        // Handle strings inside tags
+        // Inside quoted string in tag
         if in_string {
             tag_buffer.push(c);
+
             if c == '\\' {
                 if let Some(next) = chars.next() {
                     tag_buffer.push(next);
                 }
                 continue;
             }
+
             if c == string_delim {
                 in_string = false;
             }
@@ -115,97 +121,97 @@ pub fn format_html(code: &str) -> String {
             continue;
         }
 
-        // Detect tag start
+        // Start of tag
         if c == '<' {
-            flush_tag_buffer(&mut result, &mut tag_buffer, indent_level);
+            // Flush text before tag
+            if !text_buffer.trim().is_empty() {
+                result.push('\n');
+                result.push_str(&indent_str.repeat(indent_level));
+                result.push_str(text_buffer.trim());
+            }
+            text_buffer.clear();
 
             in_tag = true;
             tag_buffer.push(c);
             continue;
         }
 
-        // Detect tag end
+        // End of tag
         if c == '>' && in_tag {
             tag_buffer.push(c);
-            let tag_str = tag_buffer.trim();
+            let tag = tag_buffer.trim().to_string();
+            tag_buffer.clear();
+            in_tag = false;
 
-            // Check if opening <pre> or <code> to skip formatting
-            if !skip_format && (tag_str.eq_ignore_ascii_case("<pre>") || tag_str.eq_ignore_ascii_case("<code>")) {
+            let lower = tag.to_ascii_lowercase();
+
+            // DOCTYPE or comment — don't indent logic
+            if lower.starts_with("<!doctype") || lower.starts_with("<!--") {
+                result.push('\n');
+                result.push_str(&tag);
+                continue;
+            }
+
+            // Closing tag
+            if lower.starts_with("</") {
+                indent_level = indent_level.saturating_sub(1);
+
+                result.push('\n');
+                result.push_str(&indent_str.repeat(indent_level));
+                result.push_str(&tag);
+
+                if lower == "</pre>" || lower == "</code>" {
+                    skip_format = false;
+                }
+
+                continue;
+            }
+
+            // Opening tag
+            result.push('\n');
+            result.push_str(&indent_str.repeat(indent_level));
+            result.push_str(&tag);
+
+            let is_self_closing =
+                lower.ends_with("/>")
+                    || lower.starts_with("<meta")
+                    || lower.starts_with("<link")
+                    || lower.starts_with("<br")
+                    || lower.starts_with("<hr")
+                    || lower.starts_with("<img")
+                    || lower.starts_with("<input");
+
+            if lower == "<pre>" || lower == "<code>" {
                 skip_format = true;
             }
 
-            // Closing tag reduces indent
-            if tag_str.starts_with("</") {
-                indent_level = indent_level.saturating_sub(1);
-
-                // Detect closing of <pre> or <code>
-                if skip_format && (tag_str.eq_ignore_ascii_case("</pre>") || tag_str.eq_ignore_ascii_case("</code>")) {
-                    skip_format = false;
-                    result.push_str(tag_str);
-                    tag_buffer.clear();
-                    in_tag = false;
-                    continue;
-                }
+            if !is_self_closing {
+                indent_level += 1;
             }
 
-            // Normal formatting for other tags
-            if !skip_format {
-                result.push('\n');
-                result.push_str(&indent.repeat(indent_level));
-                result.push_str(tag_str);
-                result.push('\n');
-
-                // Opening tag increases indent if not self-closing
-                if !tag_str.starts_with("</") && !tag_str.ends_with("/>") {
-                    let tag_name = tag_str
-                        .trim_start_matches('<')
-                        .split_whitespace()
-                        .next()
-                        .unwrap_or("");
-                    if tag_name != "br" && tag_name != "hr" && tag_name != "meta" && tag_name != "link" {
-                        indent_level += 1;
-                    }
-                }
-            } else {
-                // Inside <pre>/<code>, just append the tag as-is
-                result.push_str(tag_str);
-            }
-
-            tag_buffer.clear();
-            in_tag = false;
             continue;
         }
 
+        // Inside tag
         if in_tag {
             tag_buffer.push(c);
         } else {
-            if !skip_format {
-                // Regular text outside tags
-                if !c.is_whitespace() || !result.ends_with(' ') {
-                    result.push(c);
-                }
-            } else {
-                // Inside <pre>/<code>, preserve text exactly
+            // Text content
+            if skip_format {
                 result.push(c);
+            } else {
+                text_buffer.push(c);
             }
         }
     }
 
-    // Process <style> blocks
+    // Process <style> and <script> safely after structure is fixed
     let result = format_tag_contents(&result, "style", crate::css::format_css);
-
-    // Process <script> blocks
     let result = format_tag_contents(&result, "script", crate::js::format_js);
 
-    result.trim().to_string()
+    result.trim_start().to_string()
 }
 
-fn flush_tag_buffer(result: &mut String, buffer: &mut String, _indent_level: usize) {
-    if !buffer.is_empty() {
-        result.push_str(buffer);
-        buffer.clear();
-    }
-}
 
 pub fn format_tag_contents<F>(html: &str, tag: &str, unminifier: F) -> String
 where
