@@ -12,14 +12,18 @@ pub fn render_markdown(input: &str, title: &str, site_name: &str, site_root: &st
     let mut final_html = String::new();
 
     // Inject collected CSS
+    final_html.push_str("<style>");
     for style in processed.css {
-        final_html.push_str(&format!("<style>{}</style>", style));
+        final_html.push_str(&format!("\n{}\n", style));
     }
+    final_html.push_str("</style>");
 
     // Inject collected JS
+    final_html.push_str("<script>");
     for script in processed.js {
-        final_html.push_str(&format!("<script>{}</script>", script));
+        final_html.push_str(&format!("\n{}\n", script));
     }
+    final_html.push_str("</script>");
 
     final_html.push_str(&markdown_html);
 

@@ -67,7 +67,7 @@ impl Builder {
         try_fs(build_path, |p| fs::create_dir_all(p))?;
         try_fs(&build_path.join("styles"), |p| fs::create_dir_all(p))?;
 
-        let mut builder = Self { config: config.clone(), production, assets: Assets::new(production) };
+        let mut builder = Self { config: config.clone(), production, assets: Assets::new() };
         builder.write_assets()?;
         builder.regenerate_sidebar()?;
         builder.build_all_markdown()?;

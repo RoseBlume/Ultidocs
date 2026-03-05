@@ -20,19 +20,13 @@ const HIGHLIGHT_CSS: &str = include_str!(
     )
 );
 
-const PROD_JS: &str = include_str!(
+const JS: &str = include_str!(
     concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/assets/js/prod.js"
+        "/assets/js/main.js"
     )
 );
 
-const DEV_JS: &str = include_str!(
-    concat!(
-        env!("CARGO_MANIFEST_DIR"),
-        "/assets/js/dev.js"
-    )
-);
 
 
 const FAVICON: &[u8; 4286] = include_bytes!(
@@ -52,16 +46,12 @@ pub struct Assets {
 }
 
 impl Assets {
-    pub fn new(production: bool) -> Self {
-        let js = if production {
-            PROD_JS.to_string()
-        } else {
-            DEV_JS.to_string()
-        };
+    pub fn new() -> Self {
+
         Self {
             sidebar_html: String::new(),
             favicon: FAVICON.to_vec(),
-            js,
+            js: JS.to_string(),
             main_css: CSS.to_string(),
             sidebar_css: SIDEBAR_CSS.to_string(),
             highlight_css: HIGHLIGHT_CSS.to_string(),
