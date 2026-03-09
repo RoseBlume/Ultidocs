@@ -3,6 +3,7 @@ name = "ultihighlighter"
 version = "0.3.7"
 include = [
     "src/**",
+    "assets/**",
     "Cargo.toml"
 ]
 description = "A simple highlighter to highlight markdown codeblocks and convert to html"
