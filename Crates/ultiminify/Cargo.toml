@@ -1,6 +1,6 @@
 [package]
 name = "ultiminify"
-version = "0.3.7"
+version = "0.3.8"
 description = "A minifier for ultidocs"
 include = [
     "src/**",
