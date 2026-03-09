@@ -1,5 +1,6 @@
 [package]
 name = "ultidocs-macros"
+description = "Macros for building ultidocs"
 version = "0.3.7"
 authors.workspace = true
 repository.workspace = true
