@@ -1,0 +1,26 @@
+.link-card {
+    list-style: none;
+    padding: 1rem;
+}
+
+.card-link {
+    display: block;
+    height: 100%;
+    padding: 1.25rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.card-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.card-desc {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    opacity: 0.75;
+}

@@ -1,0 +1,14 @@
+    .highlight.lang-csharp,
+    .highlight.lang-cs {
+        background: #160f29;
+        color: #f1e9ff;
+    }
+    .highlight.lang-csharp .keyword,
+    .highlight.lang-cs .keyword { color: #9d4edd; }
+    .highlight.lang-csharp .string,
+    .highlight.lang-cs .string { color: #ff99c8; }
+    .highlight.lang-csharp .logical,
+    .highlight.lang-cs .logical { color: #ff4d6d; }
+    .highlight.lang-csharp .symbol,
+    .highlight.lang-cs .symbol { color: #cdb4db; }
+

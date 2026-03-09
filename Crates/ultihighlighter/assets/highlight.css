@@ -1,0 +1,454 @@
+.highlight {
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+
+.inline {
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+.highlight code {
+    color: inherit;
+}
+
+
+
+.logical {
+    font-weight: 600;
+}
+
+.highlight .keyword {
+    font-weight: 600;
+}
+
+
+
+.highlight .logical {
+    font-weight: 600;
+}
+
+
+
+
+@media (prefers-color-scheme: dark) {
+    .highlight {
+        background: #2b2b2b;
+        color: #d4d4d4;
+    }
+
+
+    .inline {
+        background:#222;
+        color:#ddd;
+    }
+
+    .keyword {
+        color: #005cc5;
+    }
+
+    .string {
+        color: #032f62;
+    }
+
+    .logical {
+        color: #d73a49;
+    }
+
+    .highlight .keyword {
+        color: #569cd6;
+    }
+
+    .highlight .string {
+        color: #ce9178;
+    }
+
+    .highlight .logical {
+        color: #c586c0;
+    }
+
+    .highlight .symbol {
+        color: #dcdcaa;
+    }
+
+    /* ================= RUST ================= */
+    .highlight.lang-rust {
+        background: #1b1410;
+        color: #f2e6d9;
+    }
+    .highlight.lang-rust .keyword { color: #ff8c42; }
+    .highlight.lang-rust .string  { color: #ffd29d; }
+    .highlight.lang-rust .logical { color: #ff4d6d; }
+    .highlight.lang-rust .symbol  { color: #ffe066; }
+
+    /* ================= PYTHON ================= */
+    .highlight.lang-python {
+        background: #0f1c18;
+        color: #d7fbe8;
+    }
+    .highlight.lang-python .keyword { color: #2ec4b6; }
+    .highlight.lang-python .string  { color: #80ffdb; }
+    .highlight.lang-python .logical { color: #ff006e; }
+    .highlight.lang-python .symbol  { color: #b7efc5; }
+
+    /* ================= JAVASCRIPT ================= */
+    .highlight.lang-javascript,
+    .highlight.lang-js {
+        background: #141414;
+        color: #f5f5f5;
+    }
+    .highlight.lang-javascript .keyword,
+    .highlight.lang-js .keyword { color: #f7df1e; }
+    .highlight.lang-javascript .string,
+    .highlight.lang-js .string { color: #00ffcc; }
+    .highlight.lang-javascript .logical,
+    .highlight.lang-js .logical { color: #ff006e; }
+    .highlight.lang-javascript .symbol,
+    .highlight.lang-js .symbol { color: #9d4edd; }
+
+    /* ================= TYPESCRIPT ================= */
+    .highlight.lang-typescript,
+    .highlight.lang-ts {
+        background: #0a192f;
+        color: #ccd6f6;
+    }
+    .highlight.lang-typescript .keyword,
+    .highlight.lang-ts .keyword { color: #64ffda; }
+    .highlight.lang-typescript .string,
+    .highlight.lang-ts .string { color: #a8dadc; }
+    .highlight.lang-typescript .logical,
+    .highlight.lang-ts .logical { color: #ff6b6b; }
+    .highlight.lang-typescript .symbol,
+    .highlight.lang-ts .symbol { color: #8892b0; }
+
+    /* ================= JAVA ================= */
+    .highlight.lang-java {
+        background: #1a1024;
+        color: #f3e8ff;
+    }
+    .highlight.lang-java .keyword { color: #c77dff; }
+    .highlight.lang-java .string  { color: #ffd6ff; }
+    .highlight.lang-java .logical { color: #ff758f; }
+    .highlight.lang-java .symbol  { color: #b8c0ff; }
+
+    /* ================= C# ================= */
+    .highlight.lang-csharp,
+    .highlight.lang-cs {
+        background: #160f29;
+        color: #f1e9ff;
+    }
+    .highlight.lang-csharp .keyword,
+    .highlight.lang-cs .keyword { color: #9d4edd; }
+    .highlight.lang-csharp .string,
+    .highlight.lang-cs .string { color: #ff99c8; }
+    .highlight.lang-csharp .logical,
+    .highlight.lang-cs .logical { color: #ff4d6d; }
+    .highlight.lang-csharp .symbol,
+    .highlight.lang-cs .symbol { color: #cdb4db; }
+
+    /* ================= PHP ================= */
+    .highlight.lang-php {
+        background: #111827;
+        color: #e0e7ff;
+    }
+    .highlight.lang-php .keyword { color: #6366f1; }
+    .highlight.lang-php .string  { color: #22d3ee; }
+    .highlight.lang-php .logical { color: #f43f5e; }
+    .highlight.lang-php .symbol  { color: #a5b4fc; }
+
+    /* ================= DART ================= */
+    .highlight.lang-dart {
+        background: #062f2f;
+        color: #d0f4f4;
+    }
+    .highlight.lang-dart .keyword { color: #00d1b2; }
+    .highlight.lang-dart .string  { color: #72efdd; }
+    .highlight.lang-dart .logical { color: #ff7096; }
+    .highlight.lang-dart .symbol  { color: #80ffdb; }
+
+    /* ================= C ================= */
+    .highlight.lang-c {
+        background: #1c1f26;
+        color: #e5e9f0;
+    }
+    .highlight.lang-c .keyword { color: #81a1c1; }
+    .highlight.lang-c .string  { color: #a3be8c; }
+    .highlight.lang-c .logical { color: #bf616a; }
+    .highlight.lang-c .symbol  { color: #ebcb8b; }
+
+    /* ================= C++ ================= */
+    .highlight.lang-cpp,
+    .highlight.lang-c\+\+ {
+        background: #1a0f14;
+        color: #f8e1e7;
+    }
+    .highlight.lang-cpp .keyword,
+    .highlight.lang-c\+\+ .keyword { color: #ff4d6d; }
+    .highlight.lang-cpp .string,
+    .highlight.lang-c\+\+ .string { color: #ffd6a5; }
+    .highlight.lang-cpp .logical,
+    .highlight.lang-c\+\+ .logical { color: #9d4edd; }
+    .highlight.lang-cpp .symbol,
+    .highlight.lang-c\+\+ .symbol { color: #ffe066; }
+
+    /* ================= NASM ================= */
+    .highlight.lang-nasm,
+    .highlight.lang-asm {
+        background: #141000;
+        color: #ffea00;
+    }
+    .highlight.lang-nasm .keyword,
+    .highlight.lang-asm .keyword { color: #ffae00; }
+    .highlight.lang-nasm .string,
+    .highlight.lang-asm .string { color: #ffd000; }
+    .highlight.lang-nasm .logical,
+    .highlight.lang-asm .logical { color: #ff5400; }
+    .highlight.lang-nasm .symbol,
+    .highlight.lang-asm .symbol { color: #fff3b0; }
+
+    /* ================= R ================= */
+    .highlight.lang-r {
+        background: #0b1f14;
+        color: #d8f3dc;
+    }
+    .highlight.lang-r .keyword { color: #52b788; }
+    .highlight.lang-r .string  { color: #95d5b2; }
+    .highlight.lang-r .logical { color: #ff6b6b; }
+    .highlight.lang-r .symbol  { color: #74c69d; }
+
+    /* ================= SQL ================= */
+    .highlight.lang-sql {
+        background: #161616;
+        color: #f8f4e3;
+    }
+    .highlight.lang-sql .keyword {
+        color: #ffd60a;
+        text-transform: uppercase;
+    }
+    .highlight.lang-sql .string  { color: #80ffdb; }
+    .highlight.lang-sql .logical { color: #ff006e; }
+    .highlight.lang-sql .symbol  { color: #adb5bd; }
+
+    /* ================= HTML ================= */
+    .highlight.lang-html {
+        background: #1a120b;
+        color: #fdf0d5;
+    }
+    .highlight.lang-html .keyword { color: #e36414; }
+    .highlight.lang-html .string  { color: #9a031e; }
+    .highlight.lang-html .logical { color: #fb8b24; }
+    .highlight.lang-html .symbol  { color: #f48c06; }
+
+    /* ================= CSS ================= */
+    .highlight.lang-css {
+        background: #0f1021;
+        color: #e4e4ff;
+    }
+    .highlight.lang-css .keyword { color: #7b2cbf; }
+    .highlight.lang-css .string  { color: #c77dff; }
+    .highlight.lang-css .logical { color: #ff4d6d; }
+    .highlight.lang-css .symbol  { color: #9d4edd; }
+}
+
+@media (prefers-color-scheme: light) {
+
+    .highlight {
+        background: #f6f8fa;
+        color: #24292f;
+    }
+
+    .inline {
+        background: #eaeef2;
+        color: #24292f;
+    }
+
+    .keyword { color: #005cc5; }
+    .string  { color: #032f62; }
+    .logical { color: #d73a49; }
+
+    .highlight .keyword { color: #0550ae; }
+    .highlight .string  { color: #0a3069; }
+    .highlight .logical { color: #cf222e; }
+    .highlight .symbol  { color: #6e7781; }
+
+    /* ================= RUST ================= */
+    .highlight.lang-rust {
+        background: #fff4e6;
+        color: #3b2f2f;
+    }
+    .highlight.lang-rust .keyword { color: #b54708; }
+    .highlight.lang-rust .string  { color: #9a3412; }
+    .highlight.lang-rust .logical { color: #be123c; }
+    .highlight.lang-rust .symbol  { color: #92400e; }
+
+    /* ================= PYTHON ================= */
+    .highlight.lang-python {
+        background: #ecfdf5;
+        color: #064e3b;
+    }
+    .highlight.lang-python .keyword { color: #0f766e; }
+    .highlight.lang-python .string  { color: #047857; }
+    .highlight.lang-python .logical { color: #be123c; }
+    .highlight.lang-python .symbol  { color: #065f46; }
+
+    /* ================= JAVASCRIPT ================= */
+    .highlight.lang-javascript,
+    .highlight.lang-js {
+        background: #fffbea;
+        color: #3b3b00;
+    }
+    .highlight.lang-javascript .keyword,
+    .highlight.lang-js .keyword { color: #92400e; }
+    .highlight.lang-javascript .string,
+    .highlight.lang-js .string { color: #065f46; }
+    .highlight.lang-javascript .logical,
+    .highlight.lang-js .logical { color: #be123c; }
+    .highlight.lang-javascript .symbol,
+    .highlight.lang-js .symbol { color: #6b21a8; }
+
+    /* ================= TYPESCRIPT ================= */
+    .highlight.lang-typescript,
+    .highlight.lang-ts {
+        background: #e0f2fe;
+        color: #0c4a6e;
+    }
+    .highlight.lang-typescript .keyword,
+    .highlight.lang-ts .keyword { color: #0369a1; }
+    .highlight.lang-typescript .string,
+    .highlight.lang-ts .string { color: #155e75; }
+    .highlight.lang-typescript .logical,
+    .highlight.lang-ts .logical { color: #be123c; }
+    .highlight.lang-typescript .symbol,
+    .highlight.lang-ts .symbol { color: #334155; }
+
+    /* ================= JAVA ================= */
+    .highlight.lang-java {
+        background: #f3e8ff;
+        color: #3b0764;
+    }
+    .highlight.lang-java .keyword { color: #7e22ce; }
+    .highlight.lang-java .string  { color: #6b21a8; }
+    .highlight.lang-java .logical { color: #be123c; }
+    .highlight.lang-java .symbol  { color: #4338ca; }
+
+    /* ================= C# ================= */
+    .highlight.lang-csharp,
+    .highlight.lang-cs {
+        background: #f5f3ff;
+        color: #312e81;
+    }
+    .highlight.lang-csharp .keyword,
+    .highlight.lang-cs .keyword { color: #6d28d9; }
+    .highlight.lang-csharp .string,
+    .highlight.lang-cs .string { color: #be185d; }
+    .highlight.lang-csharp .logical,
+    .highlight.lang-cs .logical { color: #b91c1c; }
+    .highlight.lang-csharp .symbol,
+    .highlight.lang-cs .symbol { color: #4c1d95; }
+
+    /* ================= PHP ================= */
+    .highlight.lang-php {
+        background: #eef2ff;
+        color: #1e1b4b;
+    }
+    .highlight.lang-php .keyword { color: #4338ca; }
+    .highlight.lang-php .string  { color: #0e7490; }
+    .highlight.lang-php .logical { color: #be123c; }
+    .highlight.lang-php .symbol  { color: #3730a3; }
+
+    /* ================= DART ================= */
+    .highlight.lang-dart {
+        background: #e6fffa;
+        color: #134e4a;
+    }
+    .highlight.lang-dart .keyword { color: #0f766e; }
+    .highlight.lang-dart .string  { color: #047857; }
+    .highlight.lang-dart .logical { color: #be123c; }
+    .highlight.lang-dart .symbol  { color: #0d9488; }
+
+    /* ================= C ================= */
+    .highlight.lang-c {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+    .highlight.lang-c .keyword { color: #1d4ed8; }
+    .highlight.lang-c .string  { color: #166534; }
+    .highlight.lang-c .logical { color: #b91c1c; }
+    .highlight.lang-c .symbol  { color: #92400e; }
+
+    /* ================= C++ ================= */
+    .highlight.lang-cpp,
+    .highlight.lang-c\+\+ {
+        background: #fff1f2;
+        color: #4c0519;
+    }
+    .highlight.lang-cpp .keyword,
+    .highlight.lang-c\+\+ .keyword { color: #be123c; }
+    .highlight.lang-cpp .string,
+    .highlight.lang-c\+\+ .string { color: #9a3412; }
+    .highlight.lang-cpp .logical,
+    .highlight.lang-c\+\+ .logical { color: #6d28d9; }
+    .highlight.lang-cpp .symbol,
+    .highlight.lang-c\+\+ .symbol { color: #92400e; }
+
+    /* ================= NASM ================= */
+    .highlight.lang-nasm,
+    .highlight.lang-asm {
+        background: #fffbeb;
+        color: #78350f;
+    }
+    .highlight.lang-nasm .keyword,
+    .highlight.lang-asm .keyword { color: #b45309; }
+    .highlight.lang-nasm .string,
+    .highlight.lang-asm .string { color: #92400e; }
+    .highlight.lang-nasm .logical,
+    .highlight.lang-asm .logical { color: #b91c1c; }
+    .highlight.lang-nasm .symbol,
+    .highlight.lang-asm .symbol { color: #854d0e; }
+
+    /* ================= R ================= */
+    .highlight.lang-r {
+        background: #ecfdf5;
+        color: #052e16;
+    }
+    .highlight.lang-r .keyword { color: #15803d; }
+    .highlight.lang-r .string  { color: #166534; }
+    .highlight.lang-r .logical { color: #b91c1c; }
+    .highlight.lang-r .symbol  { color: #065f46; }
+
+    /* ================= SQL ================= */
+    .highlight.lang-sql {
+        background: #fefce8;
+        color: #422006;
+    }
+    .highlight.lang-sql .keyword {
+        color: #a16207;
+        text-transform: uppercase;
+    }
+    .highlight.lang-sql .string  { color: #065f46; }
+    .highlight.lang-sql .logical { color: #be123c; }
+    .highlight.lang-sql .symbol  { color: #713f12; }
+
+    /* ================= HTML ================= */
+    .highlight.lang-html {
+        background: #fff7ed;
+        color: #431407;
+    }
+    .highlight.lang-html .keyword { color: #c2410c; }
+    .highlight.lang-html .string  { color: #9a3412; }
+    .highlight.lang-html .logical { color: #ea580c; }
+    .highlight.lang-html .symbol  { color: #7c2d12; }
+
+    /* ================= CSS ================= */
+    .highlight.lang-css {
+        background: #f5f3ff;
+        color: #2e1065;
+    }
+    .highlight.lang-css .keyword { color: #6d28d9; }
+    .highlight.lang-css .string  { color: #7c3aed; }
+    .highlight.lang-css .logical { color: #be123c; }
+    .highlight.lang-css .symbol  { color: #4c1d95; }
+}

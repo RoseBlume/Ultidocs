@@ -1,0 +1,14 @@
+    .highlight.lang-nasm,
+    .highlight.lang-asm {
+        background: #141000;
+        color: #ffea00;
+    }
+    .highlight.lang-nasm .keyword,
+    .highlight.lang-asm .keyword { color: #ffae00; }
+    .highlight.lang-nasm .string,
+    .highlight.lang-asm .string { color: #ffd000; }
+    .highlight.lang-nasm .logical,
+    .highlight.lang-asm .logical { color: #ff5400; }
+    .highlight.lang-nasm .symbol,
+    .highlight.lang-asm .symbol { color: #fff3b0; }
+

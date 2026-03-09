@@ -1,100 +1,79 @@
 use std::collections::HashSet;
-use crate::helpers::extract_attr;
+use std::any::Any;
+mod registry;
+use registry::*;
 mod cards;
-use cards::{LinkCard, CardGrid};
-pub trait Component {
+mod tabs;
+use ultihighlighter::Css;
+
+
+pub trait Component: Any {
+    fn as_any(&self) -> &dyn Any;
     fn html(&self) -> String;
-    fn css(&self) -> String;
+    fn css(&self, css: &mut Css);
     fn js(&self) -> String;
 }
 
+// impl dyn Component {
+//     pub fn downcast_ref<T: Component>(&self) -> Option<&T> {
+//         self.as_any().downcast_ref::<T>()
+//     }
+// }
+
+pub trait ComponentParser: Component {
+    // const fn tag() -> &'static str;
+
+    fn parse(lines: &mut std::iter::Peekable<std::str::Lines>, site_root: &str)
+        -> Option<Self>
+    where
+        Self: Sized;
+}
+
+
+
+
 pub struct ComponentAssets {
     pub html: String,
-    pub css: Vec<String>,
     pub js: Vec<String>,
 }
 
 
-pub fn process_components(input: &str, site_root: &str) -> ComponentAssets {
+
+
+pub fn process_components(input: &str, site_root: &str, mut css: &mut Css) -> ComponentAssets {
     let mut output = String::new();
-    let mut css_set = HashSet::new();
     let mut js_set = HashSet::new();
 
-    let mut remaining = input;
+    let mut lines = input.lines().peekable();
+    // Use `next()` directly to ensure each iteration consumes a line
+    while let Some(line) = lines.next() {
+        let trimmed = line.trim();
+        let mut matched = false;
 
-    while let Some(start) = remaining.find("<CardGrid>") {
-        // Push content before component
-        output.push_str(&remaining[..start]);
-        remaining = &remaining[start + "<CardGrid>".len()..];
+        for entry in COMPONENTS {
 
-        if let Some(end) = remaining.find("</CardGrid>") {
-            let inner = &remaining[..end];
+            if trimmed.starts_with(&format!("<{}", entry.tag)) {
+                // Parse the component; the parser must consume its lines
+                if let Some(component) = (entry.parse)(&mut lines, site_root) {
+                    component.css(&mut css);
+                    js_set.insert(component.js());
+                    output.push_str(&component.html());
 
-            let mut grid = CardGrid::new();
-
-            let mut tag_lines = Vec::new();
-            let mut inside_tag = false;
-
-            for line in inner.lines() {
-                let line = line.trim();
-                if line.starts_with("<LinkCard") {
-                    tag_lines.clear();
-                    tag_lines.push(line);
-                    inside_tag = true;
-                    continue;
                 }
-
-                if inside_tag {
-                    tag_lines.push(line);
-                    if line.ends_with("/>") {
-                        // parse attributes from all lines of this tag
-                        let title = extract_attr(&tag_lines, "title");
-                        let href = extract_attr(&tag_lines, "href");
-                        let root = if href.trim_start().to_lowercase().starts_with("http") {
-                            ""
-                        }
-                        else if site_root == "/" {
-                            ""
-                        }
-                        else {
-                            site_root
-                        };
-                        let description = extract_attr(&tag_lines, "description");
-
-                        let mut card = LinkCard::new(&title, &href, root);
-                        if !description.is_empty() {
-                            card = card.with_description(&description);
-                        }
-
-                        css_set.insert(card.css());
-                        js_set.insert(card.js());
-
-                        grid.add_card(card);
-
-                        inside_tag = false;
-                    }
-                }
+                matched = true;
+                break;
             }
+        }
 
-            // Add grid CSS/JS
-            css_set.insert(grid.css());
-            js_set.insert(grid.js());
-
-            // Append raw HTML without Markdown parsing
-            output.push_str(&grid.html());
-
-            remaining = &remaining[end + "</CardGrid>".len()..];
-        } else {
-            break;
+        // If no component matched, treat this line as plain text
+        if !matched {
+            output.push_str(line);
+            output.push('\n');
         }
     }
 
-    // Append any remaining Markdown
-    output.push_str(remaining);
-
     ComponentAssets {
         html: output,
-        css: css_set.into_iter().collect(),
         js: js_set.into_iter().collect(),
     }
 }

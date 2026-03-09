@@ -1,0 +1,14 @@
+[package]
+name = "ultidocs-macros"
+version = "0.3.7"
+authors.workspace = true
+repository.workspace = true
+categories.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+ultiminify = { version = "0.3.7", path = "../ultiminify"}

@@ -1,6 +1,6 @@
 [package]
 name = "ultimd2html"
-version = "0.3.6"
+version = "0.3.7"
 description = "A markdown to html converter for ultidocs"
 exclude = ["CHANGELOG.md", "/target"]
 include = [
@@ -15,4 +15,5 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-ultihighlighter = { version = "0.3.6", path = "../ultihighlighter" }
+ultidocs-macros = { version = "0.3.7", path = "../ultidocs-macros" }
+ultihighlighter = { version = "0.3.7", path = "../ultihighlighter" }

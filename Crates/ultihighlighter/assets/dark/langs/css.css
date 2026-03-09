@@ -1,0 +1,8 @@
+    .highlight.lang-css {
+        background: #0f1021;
+        color: #e4e4ff;
+    }
+    .highlight.lang-css .keyword { color: #7b2cbf; }
+    .highlight.lang-css .string  { color: #c77dff; }
+    .highlight.lang-css .logical { color: #ff4d6d; }
+    .highlight.lang-css .symbol  { color: #9d4edd; }

@@ -7,13 +7,14 @@ members = [
 	"Crates/ultiminify", 
 	"Crates/ultijson", 
 	"Crates/ultilinter",
+	"Crates/ultidocs-macros"
 ]
 resolver = "3"
 
 
 [workspace.package]
 authors = ["James Rose"]
-# homepage = "https://tauri.app/"
+# homepage = "https://roseblume.github.io/UltiDocs/"
 repository = "https://github.com/RoseBlume/Ultidocs"
 categories = ["web-programming"]
 license = "Apache-2.0 OR MIT"
@@ -29,3 +30,7 @@ lto = true
 incremental = false
 opt-level = "s"
 strip = true
+
+
+[profile.dev]
+overflow-checks = true

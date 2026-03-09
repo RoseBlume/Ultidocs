@@ -1,0 +1,12 @@
+    .card-body {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        color: #1a1a1a;
+    }
+
+    .card-body:hover {
+        background: #f7f7f7;
+        border-color: #bbb;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+    }

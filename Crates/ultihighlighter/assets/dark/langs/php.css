@@ -1,0 +1,9 @@
+    .highlight.lang-php {
+        background: #111827;
+        color: #e0e7ff;
+    }
+    .highlight.lang-php .keyword { color: #6366f1; }
+    .highlight.lang-php .string  { color: #22d3ee; }
+    .highlight.lang-php .logical { color: #f43f5e; }
+    .highlight.lang-php .symbol  { color: #a5b4fc; }
+

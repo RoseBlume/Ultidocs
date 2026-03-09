@@ -1,0 +1,9 @@
+    .highlight.lang-rust {
+        background: #fff4e6;
+        color: #3b2f2f;
+    }
+    .highlight.lang-rust .keyword { color: #b54708; }
+    .highlight.lang-rust .string  { color: #9a3412; }
+    .highlight.lang-rust .logical { color: #be123c; }
+    .highlight.lang-rust .symbol  { color: #92400e; }
+

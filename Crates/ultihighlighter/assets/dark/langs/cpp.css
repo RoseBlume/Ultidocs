@@ -1,0 +1,14 @@
+    .highlight.lang-cpp,
+    .highlight.lang-c\+\+ {
+        background: #1a0f14;
+        color: #f8e1e7;
+    }
+    .highlight.lang-cpp .keyword,
+    .highlight.lang-c\+\+ .keyword { color: #ff4d6d; }
+    .highlight.lang-cpp .string,
+    .highlight.lang-c\+\+ .string { color: #ffd6a5; }
+    .highlight.lang-cpp .logical,
+    .highlight.lang-c\+\+ .logical { color: #9d4edd; }
+    .highlight.lang-cpp .symbol,
+    .highlight.lang-c\+\+ .symbol { color: #ffe066; }
+

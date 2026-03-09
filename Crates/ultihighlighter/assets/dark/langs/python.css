@@ -1,0 +1,9 @@
+    .highlight.lang-python {
+        background: #0f1c18;
+        color: #d7fbe8;
+    }
+    .highlight.lang-python .keyword { color: #2ec4b6; }
+    .highlight.lang-python .string  { color: #80ffdb; }
+    .highlight.lang-python .logical { color: #ff006e; }
+    .highlight.lang-python .symbol  { color: #b7efc5; }
+

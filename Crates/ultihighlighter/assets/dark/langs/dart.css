@@ -1,0 +1,9 @@
+    .highlight.lang-dart {
+        background: #062f2f;
+        color: #d0f4f4;
+    }
+    .highlight.lang-dart .keyword { color: #00d1b2; }
+    .highlight.lang-dart .string  { color: #72efdd; }
+    .highlight.lang-dart .logical { color: #ff7096; }
+    .highlight.lang-dart .symbol  { color: #80ffdb; }
+

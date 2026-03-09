@@ -1,0 +1,14 @@
+    .highlight.lang-javascript,
+    .highlight.lang-js {
+        background: #141414;
+        color: #f5f5f5;
+    }
+    .highlight.lang-javascript .keyword,
+    .highlight.lang-js .keyword { color: #f7df1e; }
+    .highlight.lang-javascript .string,
+    .highlight.lang-js .string { color: #00ffcc; }
+    .highlight.lang-javascript .logical,
+    .highlight.lang-js .logical { color: #ff006e; }
+    .highlight.lang-javascript .symbol,
+    .highlight.lang-js .symbol { color: #9d4edd; }
+

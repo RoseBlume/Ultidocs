@@ -1,0 +1,8 @@
+    :root {
+    --tab-border: #e5e7eb;
+    --tab-text: #6b7280;
+    --tab-text-hover: #111827;
+    --tab-text-active: #111827;
+    --tab-accent: #2563eb;
+    --tab-focus: #2563eb;
+    }

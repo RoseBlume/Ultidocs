@@ -1,0 +1,9 @@
+    .highlight.lang-c {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+    .highlight.lang-c .keyword { color: #1d4ed8; }
+    .highlight.lang-c .string  { color: #166534; }
+    .highlight.lang-c .logical { color: #b91c1c; }
+    .highlight.lang-c .symbol  { color: #92400e; }
+

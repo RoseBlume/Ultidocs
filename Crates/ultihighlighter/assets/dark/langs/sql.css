@@ -1,0 +1,12 @@
+    .highlight.lang-sql {
+        background: #161616;
+        color: #f8f4e3;
+    }
+    .highlight.lang-sql .keyword {
+        color: #ffd60a;
+        text-transform: uppercase;
+    }
+    .highlight.lang-sql .string  { color: #80ffdb; }
+    .highlight.lang-sql .logical { color: #ff006e; }
+    .highlight.lang-sql .symbol  { color: #adb5bd; }
+

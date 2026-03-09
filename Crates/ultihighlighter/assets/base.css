@@ -1,0 +1,28 @@
+.highlight {
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.inline {
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.highlight code {
+    color: inherit;
+}
+
+.logical {
+    font-weight: 600;
+}
+
+.highlight .keyword {
+    font-weight: 600;
+}
+
+.highlight .logical {
+    font-weight: 600;
+}

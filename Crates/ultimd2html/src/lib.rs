@@ -1,22 +1,30 @@
-use ultihighlighter::highlight;
+// use ultidedup::{
+//     deduper::remove_duplicates,
+//     dedupe_css
+// };
+use ultihighlighter::{highlight, Css};
 mod components;
 use components::process_components;
 mod helpers;
 use helpers::*;
-pub fn render_markdown(input: &str, title: &str, site_name: &str, site_root: &str) -> String {
-    let processed = process_components(input, site_root);
 
+// This is my entry point
+pub fn render_markdown(input: &str, title: &str, site_name: &str, site_root: &str) -> (String, String) {
+    let mut css = Css::new();
+    let processed = process_components(input, site_root, &mut css);
+    // dbg_pause!(&processed.html);
+    // dedupe_css(&mut processed.css);
+    // remove_duplicates(&mut processed.js);
     // Now feed processed.html into your existing markdown renderer
-    let markdown_html = render_markdown_core(&processed.html, title, site_name);
+    let markdown_html = render_markdown_core(&processed.html, title, site_name, &mut css);
 
     let mut final_html = String::new();
-
     // Inject collected CSS
-    final_html.push_str("<style>");
-    for style in processed.css {
-        final_html.push_str(&format!("\n{}\n", style));
-    }
-    final_html.push_str("</style>");
+    // final_html.push_str("<style>");
+    // for style in processed.css {
+    //     final_html.push_str(&format!("\n{}\n", style));
+    // }
+    // final_html.push_str("</style>");
 
     // Inject collected JS
     final_html.push_str("<script>");
@@ -27,10 +35,42 @@ pub fn render_markdown(input: &str, title: &str, site_name: &str, site_root: &st
 
     final_html.push_str(&markdown_html);
 
-    final_html
+    (final_html, css.output())
 }
 
-pub fn render_markdown_core(input: &str, title: &str, site_name: &str) -> String {
+pub fn render_markdown_core(input: &str, title: &str, site_name: &str, css: &mut Css) -> String {
+    let mut html = String::new();
+
+    // let mut in_code_block = false;
+    // let mut code_lang = String::new();
+    // let mut code_buffer = String::new();
+
+    // let mut in_ul = false;
+    // let mut in_ol = false;
+    // let mut in_blockquote = false;
+
+    // let lines: Vec<&str> = input.lines().collect();
+    // let mut i = 0;
+
+    // ---------- HEADER ----------
+    html.push_str(&format!(
+        r#"<header>
+            <button id="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+            <h1>{}</h1>
+        </header>"#,
+        site_name
+    ));
+
+    html.push_str(&format!(r#"<div id="content"><h1>{}</h1>"#, title));
+
+    html.push_str(&convert_to_html(input, css));
+
+    html.push_str("</div>");
+    html
+}
+
+
+pub fn convert_to_html(input: &str, mut css: &mut Css) -> String {
     let mut html = String::new();
 
     let mut in_code_block = false;
@@ -44,16 +84,6 @@ pub fn render_markdown_core(input: &str, title: &str, site_name: &str) -> String
     let lines: Vec<&str> = input.lines().collect();
     let mut i = 0;
 
-    // ---------- HEADER ----------
-    html.push_str(&format!(
-        r#"<header>
-            <button id="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
-            <h1>{}</h1>
-        </header>"#,
-        site_name
-    ));
-
-    html.push_str(&format!(r#"<div id="content"><h1>{}</h1>"#, title));
 
     while i < lines.len() {
         let line = lines[i];
@@ -62,7 +92,7 @@ pub fn render_markdown_core(input: &str, title: &str, site_name: &str) -> String
         // ---------------- CODE BLOCK ----------------
         if trimmed.starts_with("```") {
             if in_code_block {
-                html.push_str(&highlight(&code_buffer, &code_lang));
+                html.push_str(&highlight(&code_buffer, &code_lang, &mut css));
                 code_buffer.clear();
                 in_code_block = false;
             } else {
@@ -140,12 +170,12 @@ pub fn render_markdown_core(input: &str, title: &str, site_name: &str) -> String
         }
 
         // ---------------- BLOCKQUOTE ----------------
-        else if trimmed.starts_with("> ") {
+        else if trimmed.starts_with(">") {
             if !in_blockquote {
                 html.push_str("<blockquote>\n");
                 in_blockquote = true;
             }
-            html.push_str(&format!("<p>{}</p>\n", parse_inline(&trimmed[2..])));
+            html.push_str(&format!("<p>{}</p>\n", parse_inline(&trimmed[1..])));
         }
 
         // ---------------- ORDERED LIST ----------------
@@ -202,10 +232,8 @@ pub fn render_markdown_core(input: &str, title: &str, site_name: &str) -> String
         html.push_str("</blockquote>\n");
     }
 
-    html.push_str("</div>");
     html
 }
-
 
 
 /*

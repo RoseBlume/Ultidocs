@@ -1,0 +1,22 @@
+.highlight.lang-shell,
+.highlight.lang-bash,
+.highlight.lang-sh {
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+.highlight.lang-shell .keyword,
+.highlight.lang-bash .keyword,
+.highlight.lang-sh .keyword { color: #38bdf8; }
+
+.highlight.lang-shell .string,
+.highlight.lang-bash .string,
+.highlight.lang-sh .string { color: #34d399; }
+
+.highlight.lang-shell .logical,
+.highlight.lang-bash .logical,
+.highlight.lang-sh .logical { color: #f43f5e; }
+
+.highlight.lang-shell .symbol,
+.highlight.lang-bash .symbol,
+.highlight.lang-sh .symbol { color: #cbd5f5; }

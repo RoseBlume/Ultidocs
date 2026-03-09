@@ -90,13 +90,14 @@ pub fn format_html(code: &str) -> String {
     let mut in_tag = false;
     let mut in_string = false;
     let mut string_delim = '\0';
+
     let mut tag_buffer = String::new();
     let mut text_buffer = String::new();
 
-    let mut skip_format = false; // for <pre> / <code>
+    let mut skip_format = false;
 
     while let Some(c) = chars.next() {
-        // Inside quoted string in tag
+
         if in_string {
             tag_buffer.push(c);
 
@@ -110,10 +111,10 @@ pub fn format_html(code: &str) -> String {
             if c == string_delim {
                 in_string = false;
             }
+
             continue;
         }
 
-        // Detect string start inside tag
         if in_tag && (c == '"' || c == '\'') {
             in_string = true;
             string_delim = c;
@@ -121,38 +122,28 @@ pub fn format_html(code: &str) -> String {
             continue;
         }
 
-        // Start of tag
         if c == '<' {
-            // Flush text before tag
             if !text_buffer.trim().is_empty() {
                 result.push('\n');
                 result.push_str(&indent_str.repeat(indent_level));
                 result.push_str(text_buffer.trim());
             }
-            text_buffer.clear();
 
+            text_buffer.clear();
             in_tag = true;
             tag_buffer.push(c);
             continue;
         }
 
-        // End of tag
         if c == '>' && in_tag {
             tag_buffer.push(c);
+
             let tag = tag_buffer.trim().to_string();
+            let lower = tag.to_ascii_lowercase();
+
             tag_buffer.clear();
             in_tag = false;
 
-            let lower = tag.to_ascii_lowercase();
-
-            // DOCTYPE or comment — don't indent logic
-            if lower.starts_with("<!doctype") || lower.starts_with("<!--") {
-                result.push('\n');
-                result.push_str(&tag);
-                continue;
-            }
-
-            // Closing tag
             if lower.starts_with("</") {
                 indent_level = indent_level.saturating_sub(1);
 
@@ -167,22 +158,51 @@ pub fn format_html(code: &str) -> String {
                 continue;
             }
 
-            // Opening tag
             result.push('\n');
             result.push_str(&indent_str.repeat(indent_level));
             result.push_str(&tag);
 
             let is_self_closing =
                 lower.ends_with("/>")
-                    || lower.starts_with("<meta")
-                    || lower.starts_with("<link")
-                    || lower.starts_with("<br")
-                    || lower.starts_with("<hr")
-                    || lower.starts_with("<img")
-                    || lower.starts_with("<input");
+                || lower.starts_with("<meta")
+                || lower.starts_with("<link")
+                || lower.starts_with("<br")
+                || lower.starts_with("<hr")
+                || lower.starts_with("<img")
+                || lower.starts_with("<input");
 
             if lower == "<pre>" || lower == "<code>" {
                 skip_format = true;
+            }
+
+            if lower.starts_with("<style") {
+                let inner = collect_until(&mut chars, "</style>");
+                let formatted = crate::css::format_css(&inner);
+
+                result.push('\n');
+                result.push_str(&indent_str.repeat(indent_level + 1));
+                result.push_str(&formatted);
+
+                result.push('\n');
+                result.push_str(&indent_str.repeat(indent_level));
+                result.push_str("</style>");
+
+                continue;
+            }
+
+            if lower.starts_with("<script") {
+                let inner = collect_until(&mut chars, "</script>");
+                let formatted = crate::js::format_js(&inner);
+
+                result.push('\n');
+                result.push_str(&indent_str.repeat(indent_level + 1));
+                result.push_str(&formatted);
+
+                result.push('\n');
+                result.push_str(&indent_str.repeat(indent_level));
+                result.push_str("</script>");
+
+                continue;
             }
 
             if !is_self_closing {
@@ -192,11 +212,9 @@ pub fn format_html(code: &str) -> String {
             continue;
         }
 
-        // Inside tag
         if in_tag {
             tag_buffer.push(c);
         } else {
-            // Text content
             if skip_format {
                 result.push(c);
             } else {
@@ -204,10 +222,6 @@ pub fn format_html(code: &str) -> String {
             }
         }
     }
-
-    // Process <style> and <script> safely after structure is fixed
-    let result = format_tag_contents(&result, "style", crate::css::format_css);
-    let result = format_tag_contents(&result, "script", crate::js::format_js);
 
     result.trim_start().to_string()
 }
@@ -259,4 +273,24 @@ where
 
     result.push_str(remaining);
     result
+}
+
+
+fn collect_until<I>(chars: &mut std::iter::Peekable<I>, end: &str) -> String
+where
+    I: Iterator<Item = char>,
+{
+    let mut buffer = String::new();
+
+    while let Some(c) = chars.next() {
+        buffer.push(c);
+
+        if buffer.ends_with(end) {
+            let len = buffer.len() - end.len();
+            buffer.truncate(len);
+            break;
+        }
+    }
+
+    buffer
 }

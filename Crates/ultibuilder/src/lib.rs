@@ -109,7 +109,7 @@ impl Builder {
         if !self.production {
             self.config.site_root = String::from("");
         }
-        let html = wrap_html(&meta.title, &desc_block, &body, &self.config.site_root, &self.assets);
+        let html = wrap_html(&meta.title, &desc_block, &body.0, &self.config.site_root, &self.assets, &body.1);
 
         let relative = md_path.strip_prefix(&self.config.content_dir)?;
         let mut output_path = PathBuf::from(&self.config.build_dir);
@@ -213,9 +213,9 @@ impl Builder {
             self.assets.sidebar_css = css;
         }
 
-        if let Some(css) = load_css(&self.config.highlight_css)? {
-            self.assets.highlight_css = css;
-        }
+        // if let Some(css) = load_css(&self.config.highlight_css)? {
+        //     self.assets.highlight_css = css;
+        // }
         
 
         Ok(())

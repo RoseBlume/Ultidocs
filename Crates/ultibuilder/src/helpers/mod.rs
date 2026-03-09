@@ -18,7 +18,7 @@ pub fn process_directory(
     output_dir: &Path,
     site_name: &str,
     site_root: &str,
-    assets: &Assets
+    assets: &Assets,
 ) -> Result<(), Box<dyn std::error::Error>> {
 
     for entry in fs::read_dir(input_dir)? {
@@ -40,7 +40,7 @@ pub fn process_directory(
                 .map(|d| format!(r#"<meta name="description" content="{}">"#, d))
                 .unwrap_or_default();
 
-            let html = wrap_html(&format!("{} | {}", site_name, &meta.title), &desc_block, &body, site_root, assets);
+            let html = wrap_html(&format!("{} | {}", site_name, &meta.title), &desc_block, &body.0, site_root, assets, &body.1);
 
             // Normalize file names
             let normalized_name = normalize_path_segment(&path.file_stem().unwrap().to_string_lossy());
@@ -62,6 +62,7 @@ pub fn wrap_html(
     body: &str,
     mut site_root: &str,
     assets: &Assets,
+    highlight_css: &str
 ) -> String {
     if site_root == "/" {
         site_root = "";
@@ -69,7 +70,6 @@ pub fn wrap_html(
 
     let main_css = &assets.main_css;
     let sidebar_css = &assets.sidebar_css;
-    let highlight_css = &assets.highlight_css;
     let reload_js = &assets.js;
     let sidebar_html = &assets.sidebar_html;
 

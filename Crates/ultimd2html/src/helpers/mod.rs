@@ -1,3 +1,5 @@
+// use std::collections::HashSet;
+
 /// Parses inline Markdown (links, bold/italic, inline code, images)
 pub fn parse_inline(text: &str) -> String {
     let mut result = String::new();
@@ -160,3 +162,9 @@ pub fn extract_attr(tag_lines: &[&str], attr: &str) -> String {
 
     value
 }
+
+
+// pub fn deduplicate(vec: &mut Vec<String>) {
+//     let mut seen = HashSet::new();
+//     vec.retain(|item| seen.insert(item.clone()));
+// }

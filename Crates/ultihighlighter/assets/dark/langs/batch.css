@@ -1,0 +1,22 @@
+.highlight.lang-bat,
+.highlight.lang-batch,
+.highlight.lang-cmd {
+    background: #1f2937;
+    color: #f3f4f6;
+}
+
+.highlight.lang-bat .keyword,
+.highlight.lang-batch .keyword,
+.highlight.lang-cmd .keyword { color: #facc15; }
+
+.highlight.lang-bat .string,
+.highlight.lang-batch .string,
+.highlight.lang-cmd .string { color: #22d3ee; }
+
+.highlight.lang-bat .logical,
+.highlight.lang-batch .logical,
+.highlight.lang-cmd .logical { color: #ef4444; }
+
+.highlight.lang-bat .symbol,
+.highlight.lang-batch .symbol,
+.highlight.lang-cmd .symbol { color: #a78bfa; }

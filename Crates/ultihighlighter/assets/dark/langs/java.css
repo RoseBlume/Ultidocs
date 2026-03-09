@@ -1,0 +1,9 @@
+    .highlight.lang-java {
+        background: #1a1024;
+        color: #f3e8ff;
+    }
+    .highlight.lang-java .keyword { color: #c77dff; }
+    .highlight.lang-java .string  { color: #ffd6ff; }
+    .highlight.lang-java .logical { color: #ff758f; }
+    .highlight.lang-java .symbol  { color: #b8c0ff; }
+
