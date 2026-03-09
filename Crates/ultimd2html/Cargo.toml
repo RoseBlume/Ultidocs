@@ -5,6 +5,7 @@ description = "A markdown to html converter for ultidocs"
 exclude = ["CHANGELOG.md", "/target"]
 include = [
     "src/**",
+    "assets/**",
     "Cargo.toml"
 ]
 authors.workspace = true
