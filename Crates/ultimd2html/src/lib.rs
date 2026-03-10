@@ -155,9 +155,13 @@ pub fn convert_to_html(input: &str, mut css: &mut HighlightCss) -> String {
 
         // ---------------- HEADINGS ----------------
         if trimmed.starts_with("# ") {
-            html.push_str(&format!("<h1>{}</h1>\n", parse_inline(&trimmed[2..])));
+            let content = parse_inline(&trimmed[2..]);
+            let id = trimmed[2..].to_lowercase().replace(' ', "-").replace(|c: char| !c.is_alphanumeric() && c != '-', "");
+            html.push_str(&format!(r#"<h1 id="{}">{}</h1>"#, id, content));
         } else if trimmed.starts_with("## ") {
-            html.push_str(&format!("<h2>{}</h2>\n", parse_inline(&trimmed[3..])));
+            let content = parse_inline(&trimmed[3..]);
+            let id = trimmed[3..].to_lowercase().replace(' ', "-").replace(|c: char| !c.is_alphanumeric() && c != '-', "");
+            html.push_str(&format!(r#"<h2 id="{}">{}</h2>"#, id, content));
         }
 
         // ---------------- BLOCKQUOTE ----------------

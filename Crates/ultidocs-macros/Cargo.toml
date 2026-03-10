@@ -1,7 +1,7 @@
 [package]
 name = "ultidocs-macros"
 description = "Macros for building ultidocs"
-version = "0.4.0"
+version = "0.4.1"
 authors.workspace = true
 repository.workspace = true
 categories.workspace = true
@@ -12,7 +12,7 @@ edition.workspace = true
 proc-macro = true
 
 [dependencies]
-ultiminify = { version = "0.4.0", path = "../ultiminify", optional = true, features = ["html", "css", "js"] }
+ultiminify = { version = "0.4.1", path = "../ultiminify", optional = true, features = ["html", "css", "js"] }
 
 [features]
 default = ["minify_web"]

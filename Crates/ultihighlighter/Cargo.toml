@@ -1,6 +1,6 @@
 [package]
 name = "ultihighlighter"
-version = "0.4.0"
+version = "0.4.1"
 include = [
     "src/**",
     "assets/**",
@@ -15,5 +15,5 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-ultidocs-macros = { version = "0.4.0", path = "../ultidocs-macros", features = ["web", "minify_web"] }
+ultidocs-macros = { version = "0.4.1", path = "../ultidocs-macros", features = ["web", "minify_web"] }
 

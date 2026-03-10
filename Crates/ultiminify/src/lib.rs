@@ -63,12 +63,15 @@ pub fn process_dir(dir: &Path, minify: bool) -> Result<(), Box<dyn Error>> {
             .and_then(|e| e.to_str())
             .unwrap_or("");
 
+        // Skip non-html/css/js files
+        if !matches!(ext, "html" | "css" | "js" | "mjs") {
+            continue;
+        }
+
         let raw = fs::read_to_string(&path)?;
         let mut processed = raw;
 
         match ext {
-
-            #[cfg(feature = "html")]
             "html" => {
                 if minify {
                     #[cfg(feature = "minify")]
@@ -84,8 +87,6 @@ pub fn process_dir(dir: &Path, minify: bool) -> Result<(), Box<dyn Error>> {
                     }
                 }
             }
-
-            #[cfg(feature = "css")]
             "css" => {
                 if minify {
                     #[cfg(feature = "minify")]
@@ -101,8 +102,6 @@ pub fn process_dir(dir: &Path, minify: bool) -> Result<(), Box<dyn Error>> {
                     }
                 }
             }
-
-            #[cfg(feature = "js")]
             "js" | "mjs" => {
                 if minify {
                     #[cfg(feature = "minify")]
@@ -118,8 +117,7 @@ pub fn process_dir(dir: &Path, minify: bool) -> Result<(), Box<dyn Error>> {
                     }
                 }
             }
-
-            _ => continue,
+            _ => {}
         }
 
         fs::write(&path, processed)?;

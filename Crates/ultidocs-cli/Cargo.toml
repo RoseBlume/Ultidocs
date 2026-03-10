@@ -1,6 +1,6 @@
 [package]
 name = "ultidocs-cli"
-version = "0.4.0"
+version = "0.4.1"
 authors.workspace = true
 include = [
     "src/**",
@@ -19,6 +19,6 @@ name = "ulti"
 path = "src/main.rs"
 
 [dependencies]
-ultibuilder = { version = "0.4.0", path = "../ultibuilder" }
-ultilinter = { version = "0.4.0", path = "../ultilinter", default-features = false, features = ["html", "css", "javascript"] }
-ultidocs-macros = { version = "0.4.0", path = "../ultidocs-macros", features = ["dir"] }
+ultibuilder = { version = "0.4.1", path = "../ultibuilder" }
+ultilinter = { version = "0.4.1", path = "../ultilinter", default-features = false, features = ["html", "css", "javascript"] }
+ultidocs-macros = { version = "0.4.1", path = "../ultidocs-macros", features = ["dir"] }
