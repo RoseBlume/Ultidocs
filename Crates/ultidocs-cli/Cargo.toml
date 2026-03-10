@@ -4,6 +4,7 @@ version = "0.4.0"
 authors.workspace = true
 include = [
     "src/**",
+    "assets/**",
     "Cargo.toml"
 ]
 description = "A cli application to develop documentation sites"
