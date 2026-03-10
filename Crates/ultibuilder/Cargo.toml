@@ -1,6 +1,6 @@
 [package]
 name = "ultibuilder"
-version = "0.3.8"
+version = "0.3.9"
 exclude = ["CHANGELOG.md", "/target"]
 description = "A library to build ultidocs websites"
 include = [
@@ -16,7 +16,7 @@ license.workspace = true
 edition.workspace = true
 
 [dependencies]
-ultimd2html = { version = "0.3.8", path = "../ultimd2html" }
-ultiminify = { version = "0.3.8", path = "../ultiminify" }
-ultijson = { version = "0.3.8", path = "../ultijson" }
-ultidocs-macros = { version = "0.3.8", path = "../ultidocs-macros" }
+ultimd2html = { version = "0.3.9", path = "../ultimd2html" }
+ultiminify = { version = "0.3.9", path = "../ultiminify", features = ["dir"]}
+ultijson = { version = "0.3.9", path = "../ultijson" }
+ultidocs-macros = { version = "0.3.9", path = "../ultidocs-macros", features = ["minify_web"] }

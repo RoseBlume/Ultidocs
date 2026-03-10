@@ -26,14 +26,15 @@ include_web! {
     BASE_DARK  => ("assets/dark/base.css");
 }
 
-pub struct Css {
+pub struct HighlightCss {
     base: HashSet<String>,
     light: HashSet<String>,
     dark: HashSet<String>
 }
 
-impl Css {
-    pub fn new() -> Self {
+impl HighlightCss {
+
+    pub fn default() -> Self {
         let mut base = HashSet::new(); 
         base.insert(BASE.to_string());
         

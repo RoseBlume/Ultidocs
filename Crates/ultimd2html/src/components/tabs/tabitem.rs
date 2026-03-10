@@ -24,7 +24,7 @@ impl TabItem {
     }
 
     pub fn render_panel(&self, index: usize) -> String {
-        let mut css = ultihighlighter::Css::new();
+        let mut css = ultihighlighter::HighlightCss::default();
         let html = crate::convert_to_html(&self.content, &mut css);
         let active = if index == 0 { " active" } else { "" };
         format!(
@@ -54,14 +54,13 @@ impl Component for TabItem {
     fn as_any(&self) -> &dyn Any { self }
 
     fn html(&self) -> String {
-        println!("Gettingt html");
-        let html = String::new();
-        println!("Got Html");
-        html
+        String::new()
     }
 
-    fn css(&self, _css: &mut ultihighlighter::Css) { }
-    fn js(&self) -> String { String::new() }
+    fn css(&self, _css: &mut ultihighlighter::HighlightCss) { }
+    fn js(&self, js: &mut crate::Js) {
+        js.add("");
+    }
 }
 
 impl ComponentParser for TabItem {
@@ -69,7 +68,6 @@ impl ComponentParser for TabItem {
         lines: &mut Peekable<Lines>,
         _site_root: &str,
     ) -> Option<Self> {
-        println!("Beginning TabItem Parse");
         // --- Consume the opening <TabItem ...> line ---
         let first_line = lines.next()?.trim();
         let tag_lines = vec![first_line];

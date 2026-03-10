@@ -1,5 +1,5 @@
 
-
+#[cfg(feature = "minify")]
 pub fn minify_html(code: &str) -> String {
     let mut result = String::with_capacity(code.len());
     let mut chars = code.chars().peekable();
@@ -80,6 +80,7 @@ pub fn minify_html(code: &str) -> String {
     result.trim().to_string()
 }
 
+#[cfg(feature = "format")]
 pub fn format_html(code: &str) -> String {
     let mut result = String::new();
     let mut chars = code.chars().peekable();
@@ -226,7 +227,7 @@ pub fn format_html(code: &str) -> String {
     result.trim_start().to_string()
 }
 
-
+#[cfg(feature = "minify")]
 pub fn format_tag_contents<F>(html: &str, tag: &str, unminifier: F) -> String
 where
     F: Fn(&str) -> String,
@@ -275,7 +276,7 @@ where
     result
 }
 
-
+#[cfg(feature = "format")]
 fn collect_until<I>(chars: &mut std::iter::Peekable<I>, end: &str) -> String
 where
     I: Iterator<Item = char>,

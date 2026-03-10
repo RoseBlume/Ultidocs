@@ -69,14 +69,14 @@ r#"<div class="tabs"{sync_attr}>
         html
     }
 
-    fn css(&self, css: &mut ultihighlighter::Css) {
+    fn css(&self, css: &mut ultihighlighter::HighlightCss) {
         css.add_base(TABS_BASE_CSS);
         css.add_light(TABS_LIGHT_CSS);
         css.add_dark(TABS_DARK_CSS);
     }
 
-    fn js(&self) -> String {
-        TABS_JS.to_string()
+    fn js(&self, js: &mut crate::Js) {
+        js.add(TABS_JS);
     }
 }
 

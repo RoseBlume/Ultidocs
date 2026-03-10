@@ -1,17 +1,16 @@
-use std::collections::HashSet;
 use std::any::Any;
 mod registry;
 use registry::*;
 mod cards;
 mod tabs;
-use ultihighlighter::Css;
+use ultihighlighter::HighlightCss;
 
 
 pub trait Component: Any {
     fn as_any(&self) -> &dyn Any;
     fn html(&self) -> String;
-    fn css(&self, css: &mut Css);
-    fn js(&self) -> String;
+    fn css(&self, css: &mut HighlightCss);
+    fn js(&self, js: &mut crate::Js);
 }
 
 // impl dyn Component {
@@ -32,18 +31,11 @@ pub trait ComponentParser: Component {
 
 
 
-pub struct ComponentAssets {
-    pub html: String,
-    pub js: Vec<String>,
-}
 
 
 
-
-pub fn process_components(input: &str, site_root: &str, mut css: &mut Css) -> ComponentAssets {
+pub fn process_components(input: &str, site_root: &str, mut css: &mut HighlightCss, mut js: &mut crate::Js) -> String {
     let mut output = String::new();
-    let mut js_set = HashSet::new();
-
     let mut lines = input.lines().peekable();
     // Use `next()` directly to ensure each iteration consumes a line
     while let Some(line) = lines.next() {
@@ -56,7 +48,7 @@ pub fn process_components(input: &str, site_root: &str, mut css: &mut Css) -> Co
                 // Parse the component; the parser must consume its lines
                 if let Some(component) = (entry.parse)(&mut lines, site_root) {
                     component.css(&mut css);
-                    js_set.insert(component.js());
+                    component.js(&mut js);
                     output.push_str(&component.html());
 
                 }
@@ -72,8 +64,5 @@ pub fn process_components(input: &str, site_root: &str, mut css: &mut Css) -> Co
         }
     }
 
-    ComponentAssets {
-        html: output,
-        js: js_set.into_iter().collect(),
-    }
+    output
 }

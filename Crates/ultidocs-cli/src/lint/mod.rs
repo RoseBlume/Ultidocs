@@ -13,15 +13,13 @@ pub fn run(config: Config, do_fix: bool, verbose: u8, print_fixed: bool) -> Resu
         files_to_lint.extend(collect_files_recursive(Path::new(&config.content_dir)));
     }
 
-    for opt_file in [
-        &config.custom_css,
-        &config.highlight_css,
-        &config.sidebar_css,
-    ] {
-        if let Some(f) = opt_file {
-            files_to_lint.push(PathBuf::from(f));
-        }
-    }
+    // for opt_file in [
+    //     &config.custom_css,
+    // ] {
+    //     if let Some(f) = opt_file {
+    //         files_to_lint.push(PathBuf::from(f));
+    //     }
+    // }
 
     // Lint each file
     for file_path in files_to_lint {

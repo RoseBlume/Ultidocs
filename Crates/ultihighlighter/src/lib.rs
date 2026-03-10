@@ -5,4 +5,4 @@ mod css;
 mod langs;
 
 pub use highlight::highlight;
-pub use css::Css;
+pub use css::HighlightCss;

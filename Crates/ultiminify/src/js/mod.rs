@@ -1,3 +1,4 @@
+#[cfg(feature = "minify")]
 pub fn minify_js(code: &str) -> String {
     let mut result = String::with_capacity(code.len());
     let mut chars = code.chars().peekable();
@@ -101,6 +102,7 @@ pub fn minify_js(code: &str) -> String {
     result.trim().to_string()
 }
 
+#[cfg(feature = "format")]
 pub fn format_js(code: &str) -> String {
     let mut result = String::new();
     let mut chars = code.chars().peekable();

@@ -1,6 +1,6 @@
 [package]
 name = "ultiminify"
-version = "0.3.8"
+version = "0.3.9"
 description = "A minifier for ultidocs"
 include = [
     "src/**",
@@ -12,3 +12,15 @@ repository.workspace = true
 categories.workspace = true
 license.workspace = true
 edition.workspace = true
+
+[features]
+default = ["minify", "format"]
+
+minify = []
+format = []
+
+html = []
+css = []
+js = []
+
+dir = ["html", "css", "js"]

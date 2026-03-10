@@ -2,43 +2,34 @@
 //     deduper::remove_duplicates,
 //     dedupe_css
 // };
-use ultihighlighter::{highlight, Css};
+use ultihighlighter::highlight;
+pub use ultihighlighter::HighlightCss;
 mod components;
 use components::process_components;
 mod helpers;
 use helpers::*;
-
+mod js;
+mod css;
+pub use js::Js;
+pub use css::Css;
 // This is my entry point
-pub fn render_markdown(input: &str, title: &str, site_name: &str, site_root: &str) -> (String, String) {
-    let mut css = Css::new();
-    let processed = process_components(input, site_root, &mut css);
-    // dbg_pause!(&processed.html);
-    // dedupe_css(&mut processed.css);
-    // remove_duplicates(&mut processed.js);
+pub fn render_markdown(input: &str, title: &str, site_name: &str, site_root: &str) -> (String, Css, Js) {
+    let mut css = HighlightCss::default();
+    let mut js = Js::new();
+    let processed = process_components(input, site_root, &mut css, &mut js);
+
     // Now feed processed.html into your existing markdown renderer
-    let markdown_html = render_markdown_core(&processed.html, title, site_name, &mut css);
+    let markdown_html = render_markdown_core(&processed, title, site_name, &mut css);
 
     let mut final_html = String::new();
-    // Inject collected CSS
-    // final_html.push_str("<style>");
-    // for style in processed.css {
-    //     final_html.push_str(&format!("\n{}\n", style));
-    // }
-    // final_html.push_str("</style>");
 
-    // Inject collected JS
-    final_html.push_str("<script>");
-    for script in processed.js {
-        final_html.push_str(&format!("\n{}\n", script));
-    }
-    final_html.push_str("</script>");
 
     final_html.push_str(&markdown_html);
-
-    (final_html, css.output())
+    
+    (final_html, Css::from(&css.output()), js)
 }
 
-pub fn render_markdown_core(input: &str, title: &str, site_name: &str, css: &mut Css) -> String {
+pub fn render_markdown_core(input: &str, title: &str, site_name: &str, css: &mut HighlightCss) -> String {
     let mut html = String::new();
 
     // let mut in_code_block = false;
@@ -70,7 +61,7 @@ pub fn render_markdown_core(input: &str, title: &str, site_name: &str, css: &mut
 }
 
 
-pub fn convert_to_html(input: &str, mut css: &mut Css) -> String {
+pub fn convert_to_html(input: &str, mut css: &mut HighlightCss) -> String {
     let mut html = String::new();
 
     let mut in_code_block = false;

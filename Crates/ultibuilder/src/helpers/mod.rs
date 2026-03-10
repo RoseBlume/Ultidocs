@@ -1,59 +1,17 @@
-use ultimd2html::render_markdown;
 use crate::PageMeta;
 use crate::Assets;
 use std::path::{Path};
-use std::fs;
-mod files;
+pub mod files;
 
 pub use files::{
     try_fs, 
     try_read_string, 
     try_write,
-    load_css
+    // load_css
 };
 
 /// Recursively process markdown files and generate normalized HTML
-pub fn process_directory(
-    input_dir: &Path,
-    output_dir: &Path,
-    site_name: &str,
-    site_root: &str,
-    assets: &Assets,
-) -> Result<(), Box<dyn std::error::Error>> {
 
-    for entry in fs::read_dir(input_dir)? {
-        let entry = entry?;
-        let path = entry.path();
-
-        if path.is_dir() {
-            // Normalize folder names
-            let normalized_dir = normalize_path_segment(&path.file_name().unwrap().to_string_lossy());
-            let new_output = output_dir.join(&normalized_dir);
-            fs::create_dir_all(&new_output)?;
-            process_directory(&path, &new_output, site_name, site_root, assets)?;
-        } else if path.extension().and_then(|e| e.to_str()) == Some("md") {
-            let raw = fs::read_to_string(&path)?;
-            let (meta, markdown) = parse_front_matter(&raw, &path)?;
-            let body = render_markdown(&markdown, &meta.title, site_name, site_root);
-            let desc_block = meta.description
-                .as_ref()
-                .map(|d| format!(r#"<meta name="description" content="{}">"#, d))
-                .unwrap_or_default();
-
-            let html = wrap_html(&format!("{} | {}", site_name, &meta.title), &desc_block, &body.0, site_root, assets, &body.1);
-
-            // Normalize file names
-            let normalized_name = normalize_path_segment(&path.file_stem().unwrap().to_string_lossy());
-            let mut output_path = output_dir.join(&normalized_name);
-            output_path.set_extension("html");
-
-            fs::write(&output_path, html)?;
-            println!("Generated: {} => {}", &meta.title, output_path.display());
-        }
-    }
-
-    Ok(())
-}
 
 
 pub fn wrap_html(
@@ -62,61 +20,55 @@ pub fn wrap_html(
     body: &str,
     mut site_root: &str,
     assets: &Assets,
-    highlight_css: &str
 ) -> String {
     if site_root == "/" {
         site_root = "";
     }
 
-    let main_css = &assets.main_css;
-    let sidebar_css = &assets.sidebar_css;
-    let reload_js = &assets.js;
-    let sidebar_html = &assets.sidebar_html;
-
+    // let combined_js = format!("{}\n{}", extra_js);
+    // let combined_css = format!("{}\n", highlight_css.output(), &assets.get_css());
+    let body_html = format!(
+r#"<div class="layout">
+    <div id="sidebar-container">
+        {}
+    </div>
+    <main class="main">
+        {}
+    </main>
+</div>"#,
+        &assets.sidebar_html,
+        body,
+    );
     format!(
 r#"<!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>{title}</title>
-{desc}
-<link rel="icon" type="image/x-icon" href="{root}/favicon.ico">
+    <head>
+        <meta charset="UTF-8">
+        <title>{title}</title>
+        {desc}
+        <link rel="icon" type="image/x-icon" href="{root}/favicon.ico">
 
-<style>
-{main_css}
+        <style>
+            {css}
+        </style>
+    
+    </head>
+    <body>
 
-{sidebar_css}
+        {body_html}
 
-{highlight_css}
-</style>
+        <script>
+            {js}
+        </script>
 
-</head>
-<body>
-
-<div class="layout">
-    <div id="sidebar-container">
-    {sidebar_html}
-    </div>
-    <main class="main">
-        {body}
-    </main>
-</div>
-
-<script>
-{reload_js}
-</script>
-
-</body>
+    </body>
 </html>"#,
         title = title,
         desc = desc_block,
-        body = body,
         root = site_root,
-        sidebar_html = sidebar_html,
-        main_css = main_css,
-        sidebar_css = sidebar_css,
-        highlight_css = highlight_css,
-        reload_js = reload_js,
+        body_html = body_html,
+        css = assets.get_css(),
+        js = assets.js.output()
     )
 }
 

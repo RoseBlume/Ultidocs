@@ -11,9 +11,8 @@ pub struct Config {
     pub favicon: Option<String>,
     pub content_dir: String,
     pub build_dir: String,
-    pub custom_css: Option<String>,
-    pub sidebar_css: Option<String>,
-    pub highlight_css: Option<String>,
+    pub custom_css: Option<Vec<String>>,
+    pub custom_js: Option<Vec<String>>,
     pub sidebar: Vec<SidebarItem>,
 }
 
@@ -46,9 +45,10 @@ impl Config {
             content_dir: Self::get_string(&obj, "content_dir")?,
             build_dir: Self::get_string(&obj, "build_dir")?,
             favicon: Self::get_optional_string(&obj, "favicon"),
-            custom_css: Self::get_optional_string(&obj, "custom_css"),
-            sidebar_css: Self::get_optional_string(&obj, "sidebar_css"),
-            highlight_css: Self::get_optional_string(&obj, "highlight_css"),           
+
+            custom_css: Self::get_optional_string_array(&obj, "custom_css"),
+            custom_js: Self::get_optional_string_array(&obj, "custom_js"),
+
             sidebar: SidebarItem::parse_sidebar(&obj)?,
         })
     }
@@ -69,6 +69,24 @@ impl Config {
     ) -> Option<String> {
         match map.get(key) {
             Some(JsonValue::String(s)) => Some(s.clone()),
+            _ => None,
+        }
+    }
+    fn get_optional_string_array(
+        map: &HashMap<String, JsonValue>,
+        key: &str,
+    ) -> Option<Vec<String>> {
+        match map.get(key) {
+            Some(JsonValue::Array(arr)) => {
+                Some(
+                    arr.iter()
+                        .filter_map(|v| match v {
+                            JsonValue::String(s) => Some(s.clone()),
+                            _ => None,
+                        })
+                        .collect(),
+                )
+            }
             _ => None,
         }
     }

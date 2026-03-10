@@ -39,7 +39,7 @@ impl Component for CardGrid {
         format!(r#"<ul class="card-grid">{}</ul>"#, card_code)
     }
 
-    fn css(&self, css: &mut ultihighlighter::Css) {
+    fn css(&self, css: &mut ultihighlighter::HighlightCss) {
         css.add_base(CARD_GRID_BASE_CSS);
 
         let mut has_card = false;
@@ -72,8 +72,8 @@ impl Component for CardGrid {
         }
     }
 
-    fn js(&self) -> String {
-        String::new()
+    fn js(&self, js: &mut crate::Js) {
+        js.add("");
     }
 }
 

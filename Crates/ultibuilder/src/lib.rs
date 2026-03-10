@@ -15,15 +15,14 @@ use assets::Assets;
 use config::SidebarItem;
 use helpers::{
     parse_front_matter, 
-    wrap_html, 
-    load_css, 
-    process_directory,
+    wrap_html,
     try_fs, 
     try_read_string, 
-    try_write
+    try_write,
+    normalize_path_segment
 };
 use ultimd2html::render_markdown;
-use ultiminify::{minify_css, minify_js, format_css, format_js};
+use ultiminify::{minify_html, format_html};
 
 #[derive(Debug)]
 struct PageMeta {
@@ -67,7 +66,7 @@ impl Builder {
         try_fs(build_path, |p| fs::create_dir_all(p))?;
         try_fs(&build_path.join("styles"), |p| fs::create_dir_all(p))?;
 
-        let mut builder = Self { config: config.clone(), production, assets: Assets::new() };
+        let mut builder = Self { config: config.clone(), production, assets: Assets::from_config(config) };
         builder.write_assets()?;
         builder.regenerate_sidebar()?;
         builder.build_all_markdown()?;
@@ -83,16 +82,14 @@ impl Builder {
         if !self.production {
             self.config.site_root = String::from("/");
         }
-        process_directory(
-            Path::new(&self.config.content_dir),
-            Path::new(&self.config.build_dir),
-            &self.config.title,
-            &self.config.site_root,
-            &self.assets
-            
-        )
-        
 
+        let input_dir = self.config.content_dir.clone();
+        let output_dir = self.config.build_dir.clone();
+
+        let input_dir = Path::new(&input_dir);
+        let output_dir = Path::new(&output_dir);
+
+        self.process_directory(input_dir, output_dir)
     }
 
     pub fn rebuild_markdown(&mut self, md_path: &Path) -> Result<(), Box<dyn Error>> {
@@ -109,7 +106,19 @@ impl Builder {
         if !self.production {
             self.config.site_root = String::from("");
         }
-        let html = wrap_html(&meta.title, &desc_block, &body.0, &self.config.site_root, &self.assets, &body.1);
+        
+        self.assets.custom_css.clone().combine(&body.1);
+        self.assets.js.clone().combine(&body.2);
+        let html = if self.production {
+            minify_html(
+                &wrap_html(&meta.title, &desc_block, &body.0, &self.config.site_root, &self.assets)
+            )
+        }
+        else {
+            format_html(
+                &wrap_html(&meta.title, &desc_block, &body.0, &self.config.site_root, &self.assets)
+            )
+        };
 
         let relative = md_path.strip_prefix(&self.config.content_dir)?;
         let mut output_path = PathBuf::from(&self.config.build_dir);
@@ -180,6 +189,58 @@ impl Builder {
         Ok(())
     }
 
+    fn process_directory(
+        &mut self,
+        input_dir: &Path,
+        output_dir: &Path
+    ) -> Result<(), Box<dyn std::error::Error>> {
+
+        for entry in fs::read_dir(input_dir)? {
+            let entry = entry?;
+            let path = entry.path();
+
+            if path.is_dir() {
+                // Normalize folder names
+                let normalized_dir = normalize_path_segment(&path.file_name().unwrap().to_string_lossy());
+                let new_output = output_dir.join(&normalized_dir);
+                fs::create_dir_all(&new_output)?;
+                self.process_directory(&path, &new_output)?;
+            } else if path.extension().and_then(|e| e.to_str()) == Some("md") {
+                let raw = fs::read_to_string(&path)?;
+                let (meta, markdown) = parse_front_matter(&raw, &path)?;
+                let desc_block = meta.description
+                    .as_ref()
+                    .map(|d| format!(r#"<meta name="description" content="{}">"#, d))
+                    .unwrap_or_default();
+
+                let body = render_markdown(&markdown, &meta.title, &self.config.title, &self.config.site_root);
+                
+                self.assets.custom_css.combine(&body.1);
+                self.assets.js.combine(&body.2);
+                let html = if self.production {
+                    minify_html(
+                        &wrap_html(&meta.title, &desc_block, &body.0, &self.config.site_root, &self.assets)
+                    )
+                }
+                else {
+                    format_html(
+                        &wrap_html(&meta.title, &desc_block, &body.0, &self.config.site_root, &self.assets)
+                    )
+                };
+
+                // Normalize file names
+                let normalized_name = normalize_path_segment(&path.file_stem().unwrap().to_string_lossy());
+                let mut output_path = output_dir.join(&normalized_name);
+                output_path.set_extension("html");
+
+                fs::write(&output_path, html)?;
+                println!("Generated: {} => {}", &meta.title, output_path.display());
+            }
+        }
+
+        Ok(())
+    }
+
     fn write_assets(&mut self) -> Result<(), Box<dyn Error>> {
 
         // Favicon
@@ -205,13 +266,10 @@ impl Builder {
                 .map_err(|e| format!("Failed to write favicon: {}", e))?;
         }
 
-        if let Some(css) = load_css(&self.config.custom_css)? {
-            self.assets.main_css = css;
-        }
+        // if let Some(css) = load_css(&self.config.custom_css)? {
+        //     self.assets.add_css(&css);
+        // }
 
-        if let Some(css) = load_css(&self.config.sidebar_css)? {
-            self.assets.sidebar_css = css;
-        }
 
         // if let Some(css) = load_css(&self.config.highlight_css)? {
         //     self.assets.highlight_css = css;
@@ -221,35 +279,36 @@ impl Builder {
         Ok(())
     }
 
-    pub fn rebuild_custom(&mut self, target: &str) -> Result<(), Box<dyn Error>> {
-        let opt_path = match target {
-            "css" => self.config.custom_css.as_ref(),
-            _ => None,
-        };
+    pub fn rebuild_custom(&mut self, _target: &str) -> Result<(), Box<dyn Error>> {
+        // let opt_path = match target {
+        //     "css" => self.config.custom_css.as_ref(),
+        //     _ => None,
+        // };
 
-        if let Some(path) = opt_path {
-            let content = try_read_string(Path::new(path))?;
-            let processed_content = if self.production {
-                match target {
-                    "css" => minify_css(&content),
-                    "js" => minify_js(&content),
-                    _ => content,
-                }
-            } else {
-                match target {
-                    "css" => format_css(&content),
-                    "js" => format_js(&content),
-                    _ => content,
-                }
-            };
+        // let opt_path: Option<String> = None;
+        // if let Some(&path) = opt_path {
+        //     let content = try_read_string(Path::new(&path))?;
+        //     let processed_content = if self.production {
+        //         match target {
+        //             "css" => minify_css(&content),
+        //             "js" => minify_js(&content),
+        //             _ => content,
+        //         }
+        //     } else {
+        //         match target {
+        //             "css" => format_css(&content),
+        //             "js" => format_js(&content),
+        //             _ => content,
+        //         }
+        //     };
 
-            let dest = match target {
-                "css" => Path::new(&self.config.build_dir).join("styles/main.css"),
-                "js" => Path::new(&self.config.build_dir).join("reload.js"),
-                _ => Path::new("dummy").to_path_buf(),
-            };
-            try_write(&dest, &processed_content)?;
-        }
+        //     let dest = match target {
+        //         "css" => Path::new(&self.config.build_dir).join("styles/main.css"),
+        //         "js" => Path::new(&self.config.build_dir).join("reload.js"),
+        //         _ => Path::new("dummy").to_path_buf(),
+        //     };
+        //     try_write(&dest, &processed_content)?;
+        // }
 
         Ok(())
     }

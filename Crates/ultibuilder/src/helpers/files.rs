@@ -44,14 +44,14 @@ pub fn try_write(path: &Path, data: &str) -> Result<(), Box<dyn Error>> {
 
 
 
-pub fn load_css(path_opt: &Option<String>) -> Result<Option<String>, Box<dyn Error>> {
-    if let Some(path_str) = path_opt {
-        let path = Path::new(path_str);
-        if path.exists() {
-            return Ok(Some(try_read_string(path)?));
-        } else {
-            println!("Error: File does not exist {}", path.display());
-        }
-    }
-    Ok(None)
-}
+// pub fn load_css(path_opt: &Option<String>) -> Result<Option<String>, Box<dyn Error>> {
+//     if let Some(path_str) = path_opt {
+//         let path = Path::new(path_str);
+//         if path.exists() {
+//             return Ok(Some(try_read_string(path)?));
+//         } else {
+//             println!("Error: File does not exist {}", path.display());
+//         }
+//     }
+//     Ok(None)
+// }

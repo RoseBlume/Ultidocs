@@ -41,14 +41,14 @@ r#"<li class="card">
         )
     }
 
-    fn css(&self, css: &mut ultihighlighter::Css) {
+    fn css(&self, css: &mut ultihighlighter::HighlightCss) {
         css.add_base(CARD_BASE_CSS);
         css.add_light(CARD_LIGHT_CSS);
         css.add_dark(CARD_DARK_CSS);
     }
 
-    fn js(&self) -> String {
-        String::new()
+    fn js(&self, js: &mut crate::Js) {
+        js.add("");
     }
 }
 

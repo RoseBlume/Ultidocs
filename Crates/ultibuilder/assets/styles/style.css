@@ -2,7 +2,6 @@
    Base#layout
 ========================= */
 
-
 body {
     margin: 0;
     font-family: sans-serif;
@@ -27,12 +26,11 @@ header {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-    header h1 {
-        margin: 0;
-        flex: none;
-        text-align: center;
-    }
-
+header h1 {
+    margin: 0;
+    flex: none;
+    text-align: center;
+}
 
 blockquote {
     margin: 1.5rem 0;
@@ -45,6 +43,39 @@ blockquote p {
     margin: 0;
 }
 
+/* =========================
+   Links
+========================= */
+
+a {
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:active {
+    opacity: 0.85;
+}
+
+/* Links inside paragraphs or content */
+#content a {
+    text-underline-offset: 3px;
+}
+
+/* Prevent cards and large link containers from underlining */
+.card-link,
+.link-card a {
+    text-decoration: none;
+}
+
+.card-link:hover,
+.link-card a:hover {
+    text-decoration: none;
+}
 
 /* =========================
    Responsive#layout
@@ -64,13 +95,27 @@ blockquote p {
         background: #ffffff;
         color: #1a1a1a;
     }
+
     header {
         background: #fff;
     }
+
     blockquote {
         background: #f9fafb;
         border-left-color: #262626;
         color: #374151;
+    }
+
+    a {
+        color: #2563eb;
+    }
+
+    a:visited {
+        color: #6b21a8;
+    }
+
+    a:hover {
+        color: #1d4ed8;
     }
 }
 
@@ -79,13 +124,27 @@ blockquote p {
         color: #ffffff;
         background: #1a1a1a;
     }
+
     header {
         background: #1a1a1a;
     }
+
     blockquote {
         background: #262626;
         border-left-color: #848484;
         color: #d1d5db;
+    }
+
+    a {
+        color: #60a5fa;
+    }
+
+    a:visited {
+        color: #c084fc;
+    }
+
+    a:hover {
+        color: #93c5fd;
     }
 }
 
@@ -112,12 +171,11 @@ blockquote p {
 
 /* Small screens */
 @media (max-width: 1023px) {
+
     .main {
         transition: margin-left 0.3s ease;
         width: 100%;
     }
-
-    
 
     header {
         position: fixed;
@@ -127,4 +185,5 @@ blockquote p {
         justify-content: center;
         padding: 0 1rem;
     }
+
 }

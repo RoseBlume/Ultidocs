@@ -1,0 +1,22 @@
+{
+  "title": "{}",
+  "site_root": "/",
+  "content_dir": "content",
+  "build_dir": "dist",
+  "sidebar": [
+    {
+      "label": "Home",
+      "slug": "home"
+    },
+    {
+      "label": "Auto Generated Directories",
+      "collapsed": true,
+      "autogenerate": { "directory": "autogen1" }
+    },
+    {
+      "label": "Auto Generated Directories 2",
+      "collapsed": true,
+      "autogenerate": { "directory": "autogen2" }
+    }
+  ]
+}

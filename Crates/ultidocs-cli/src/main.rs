@@ -3,7 +3,7 @@ mod helpers;
 mod cli;
 mod dev;
 mod lint;
-
+mod new;
 use cli::{Cli, Subcommand};
 use ultibuilder::{Builder};
 
@@ -36,8 +36,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         Subcommand::New => {
-            println!("New project command not implemented yet.");
-            Ok(())
+            new::run()
         }
 
         Subcommand::Help => {

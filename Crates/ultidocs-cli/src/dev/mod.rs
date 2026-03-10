@@ -145,9 +145,7 @@ fn watch_and_rebuild(config: &Config, clients: Clients, host: &str, port: u16) {
 
         for opt_file in [
             &config.favicon,
-            &config.custom_css,
-            &config.sidebar_css,
-            &config.highlight_css
+            // &config.custom_css,
         ] {
             if let Some(file) = opt_file {
                 if let Ok(metadata) = std::fs::metadata(file) {
@@ -185,9 +183,7 @@ fn watch_and_rebuild(config: &Config, clients: Clients, host: &str, port: u16) {
 
         for opt_file in [
             &config.favicon,
-            &config.custom_css,
-            &config.sidebar_css,
-            &config.highlight_css,
+            // &config.custom_css,
         ] {
             if let Some(file) = opt_file {
                 if let Ok(metadata) = std::fs::metadata(file) {
