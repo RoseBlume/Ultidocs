@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "ultibuilder"
-version = "0.3.8"
+version = "0.3.9"
 dependencies = [
  "ultidocs-macros",
  "ultijson",
@@ -14,7 +14,7 @@ dependencies = [
 
 [[package]]
 name = "ultidocs-cli"
-version = "0.3.8"
+version = "0.3.9"
 dependencies = [
  "ultibuilder",
  "ultidocs-macros",
@@ -23,29 +23,29 @@ dependencies = [
 
 [[package]]
 name = "ultidocs-macros"
-version = "0.3.8"
+version = "0.3.9"
 dependencies = [
  "ultiminify",
 ]
 
 [[package]]
 name = "ultihighlighter"
-version = "0.3.8"
+version = "0.3.9"
 dependencies = [
  "ultidocs-macros",
 ]
 
 [[package]]
 name = "ultijson"
-version = "0.3.8"
+version = "0.3.9"
 
 [[package]]
 name = "ultilinter"
-version = "0.3.8"
+version = "0.3.9"
 
 [[package]]
 name = "ultimd2html"
-version = "0.3.8"
+version = "0.3.9"
 dependencies = [
  "ultidocs-macros",
  "ultihighlighter",
@@ -53,4 +53,4 @@ dependencies = [
 
 [[package]]
 name = "ultiminify"
-version = "0.3.8"
+version = "0.3.9"

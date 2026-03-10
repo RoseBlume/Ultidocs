@@ -14,7 +14,7 @@ license.workspace = true
 edition.workspace = true
 
 [features]
-default = ["minify", "format"]
+default = ["minify", "format", "html", "css", "js"]
 
 minify = []
 format = []
